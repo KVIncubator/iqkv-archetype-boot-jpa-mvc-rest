@@ -1,0 +1,107 @@
+#set( $symbol_dollar = '$' )
+#set( $symbol_at = '@' )
+ujar :
+  build :
+    description : '${symbol_at}project.description${symbol_at}'
+    relative-path : ${symbol_dollar}{SWAGGER_UI_RELATIVE_PATH:}
+    version : '${symbol_at}project.version${symbol_at}'
+
+git :
+  commit : '@git.commit.id@'
+  build_time : '@git.build.time@'
+
+info :
+  app :
+    name : ${artifactId}
+    description : '${symbol_at}project.description${symbol_at}'
+    version : '${symbol_at}project.version${symbol_at}'
+    git_commit : ${symbol_dollar}{git.commit}
+    build_time : ${symbol_dollar}{git.build_time}
+
+spring :
+  application :
+    name : ${artifactId}
+  liquibase :
+    change-log : migrations/master.xml
+  datasource :
+    type : com.zaxxer.hikari.HikariDataSource
+    url : ${symbol_dollar}{DATASOURCE_URL:jdbc:postgresql://localhost:5432/sa_test_db}
+    username : ${symbol_dollar}{DATASOURCE_USERNAME:postgres}
+    password : ${symbol_dollar}{DATASOURCE_PASSWORD:postgres}
+    driver-class-name : ${symbol_dollar}{DATASOURCE_DRIVER:org.postgresql.Driver}
+    hikari :
+      pool-name : Hikari
+      auto-commit : false
+  jpa :
+    hibernate :
+      ddl-auto : none
+      naming :
+        physical-strategy : org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+        implicit-strategy : org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+    open-in-view : true
+    properties :
+      hibernate.jdbc.time_zone : UTC
+      hibernate.id.new_generator_mappings : true
+      hibernate.connection.provider_disables_autocommit : true
+      hibernate.cache.use_second_level_cache : true
+      hibernate.cache.use_query_cache : true
+      hibernate.generate_statistics : false
+      # modify batch size as necessary
+      hibernate.jdbc.batch_size : 25
+      hibernate.order_inserts : true
+      hibernate.order_updates : true
+      hibernate.query.fail_on_pagination_over_collection_fetch : true
+      hibernate.query.in_clause_parameter_padding : true
+    show-sql : false
+  devtools :
+    add-properties : false
+    restart :
+      enabled : false
+    livereload :
+      enabled : false
+
+  jackson :
+    default-property-inclusion : NON_NULL
+  lifecycle :
+    timeout-per-shutdown-phase : ${symbol_dollar}{TIMEOUT_PER_SHUTDOWN:20s}
+
+logging :
+  level :
+    ROOT : ${symbol_dollar}{LOGGING_LEVEL_ROOT:INFO}
+
+server :
+  port : ${symbol_dollar}{SERVER_PORT:8080}
+  shutdown : graceful
+
+management :
+  health :
+    livenessstate :
+      enabled : true
+    readinessstate :
+      enabled : true
+  info :
+    env :
+      enabled : true
+  server :
+    add-application-context-header : true
+  endpoints :
+    enabled-by-default : false
+    web :
+      exposure :
+        include : health, prometheus, info, openapi, swagger-ui
+  endpoint :
+    health :
+      enabled : true
+      show-details : always
+      probes :
+        enabled : true
+    info :
+      enabled : true
+    prometheus :
+      enabled : true
+
+springdoc :
+  show-actuator : true
+  swagger-ui :
+    config-url : ${symbol_dollar}{SWAGGER_UI_RELATIVE_PATH:/}v3/api-docs/swagger-config
+    url : ${symbol_dollar}{SWAGGER_UI_RELATIVE_PATH:/}v3/api-docs

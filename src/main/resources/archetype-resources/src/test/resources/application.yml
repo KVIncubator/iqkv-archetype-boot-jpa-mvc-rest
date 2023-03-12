@@ -1,0 +1,41 @@
+#set( $symbol_dollar = '$' )
+#set( $symbol_at = '@' )
+ujar :
+  build :
+    description : '${symbol_at}project.description${symbol_at}'
+    relative-path : ''
+    version : '${symbol_at}project.version${symbol_at}'
+
+spring :
+  application :
+    name : ${artifactId}
+  devtools :
+    add-properties : false
+    restart :
+      enabled : false
+    livereload :
+      enabled : false
+  liquibase :
+    change-log : migrations/master.xml
+  datasource :
+    type : com.zaxxer.hikari.HikariDataSource
+    driver-class-name : ${symbol_dollar}{DATASOURCE_DRIVER:org.h2.Driver}
+    url : ${symbol_dollar}{DATASOURCE_URL:jdbc:h2:mem:sa_test_db}
+    username : ${symbol_dollar}{DATASOURCE_USERNAME:postgres}
+    password : ${symbol_dollar}{DATASOURCE_PASSWORD:postgres}
+    hikari :
+      pool-name : Hikari
+      auto-commit : false
+  jpa :
+    hibernate :
+      ddl-auto : none
+      naming :
+        physical-strategy : org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+        implicit-strategy : org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+    open-in-view : true
+    properties :
+      hibernate.jdbc.time_zone : UTC
+      hibernate.cache.use_second_level_cache : false
+      hibernate.cache.use_query_cache : false
+      hibernate.generate_statistics : false
+    show-sql : false

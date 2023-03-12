@@ -1,0 +1,24 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="000000" author="ujar-developer">
+        <createSequence sequenceName="fruit_id_seq" startValue="1050" incrementBy="50"/>
+        <createTable tableName="fruits">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(120)">
+                <constraints unique="true" nullable="false" uniqueConstraintName="ux_fruit_name"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
