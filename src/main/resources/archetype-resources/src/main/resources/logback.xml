@@ -1,0 +1,60 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <springProperty name="feature" source="spring.application.name"/>
+    <springProperty name="application_name" source="spring.application.name"/>
+
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${symbol_dollar}{application_name} %clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr([%X{transactionId},%X{traceId:-},%X{spanId:-}]){blue}[%thread] %clr(%-5level)
+                %clr(%logger{36}){magenta} - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="CONSOLE_JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <fieldName>log_timestamp</fieldName>
+                    <timeZone>UTC</timeZone>
+                </timestamp>
+                <pattern>
+                    <pattern>
+                        {
+                        "env": "${symbol_dollar}{ENV}",
+                        "feature": "${symbol_dollar}{feature}",
+                        "level": "%level",
+                        "thread": "%thread",
+                        "logger": "%logger",
+                        "class": "%class",
+                        "message": "%message",
+                        "method": "%method",
+                        "line": "%line",
+                        "hostname": "${symbol_dollar}{HOSTNAME}",
+                        "trace_id":"%X{dd.trace_id:-0}",
+                        "span_id": "%X{dd.span_id:-0}",
+                        "data_privacy":"%X{private:-0}"
+                        }
+                    </pattern>
+                </pattern>
+                <stackTrace>
+                    <fieldName>exception</fieldName>
+                    <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                        <maxDepthPerThrowable>30</maxDepthPerThrowable>
+                        <maxLength>1024</maxLength>
+                        <rootCauseFirst>true</rootCauseFirst>
+                    </throwableConverter>
+                </stackTrace>
+            </providers>
+        </encoder>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="${symbol_dollar}{LOGBACK_APPENDER:-CONSOLE}"/>
+    </root>
+</configuration>

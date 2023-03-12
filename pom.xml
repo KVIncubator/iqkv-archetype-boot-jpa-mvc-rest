@@ -1,0 +1,73 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.ujar.archetype</groupId>
+    <artifactId>archetype-boot-jpa-restful</artifactId>
+    <version>0.2.0-SNAPSHOT</version>
+    <packaging>maven-archetype</packaging>
+    <description>Maven Archetype for Spring Boot Java REST API + JPA</description>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <organization>
+        <name>uJar Bootcamp</name>
+        <url>https://www.ujar.org</url>
+    </organization>
+    <developers>
+        <developer>
+            <id>1</id>
+            <name>Dima Denysenko</name>
+            <email>coding@dimdnk.com</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <parent>
+        <groupId>org.ujar.parent</groupId>
+        <artifactId>ujar-parent-pom</artifactId>
+        <version>0.2.0-SNAPSHOT</version>
+        <relativePath/>
+    </parent>
+
+    <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.archetype</groupId>
+                <artifactId>archetype-packaging</artifactId>
+            </extension>
+        </extensions>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.2.0</version>
+                    <configuration>
+                        <!-- needed to include .gitignore -->
+                        <addDefaultExcludes>false</addDefaultExcludes>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-archetype-plugin</artifactId>
+                    <version>3.2.1</version>
+                    <configuration>
+                        <!-- needed to include .gitignore -->
+                        <useDefaultExcludes>false</useDefaultExcludes>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>

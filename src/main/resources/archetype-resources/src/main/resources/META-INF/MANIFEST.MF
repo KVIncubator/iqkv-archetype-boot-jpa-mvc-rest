@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Name: ${artifactId}
+Implementation-Title: ${projectName}
+Implementation-Version: ${version}
+Main-Class: ${package}.Application
