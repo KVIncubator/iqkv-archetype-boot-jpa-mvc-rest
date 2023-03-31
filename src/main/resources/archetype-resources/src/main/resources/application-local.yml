@@ -16,3 +16,6 @@ spring :
 management :
   endpoints :
     enabled-by-default : true
+
+springdoc :
+  show-actuator : true

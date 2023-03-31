@@ -20,7 +20,7 @@ spring :
   datasource :
     type : com.zaxxer.hikari.HikariDataSource
     driver-class-name : ${symbol_dollar}{DATASOURCE_DRIVER:org.h2.Driver}
-    url : ${symbol_dollar}{DATASOURCE_URL:jdbc:h2:mem:sa_test_db}
+    url : ${symbol_dollar}{DATASOURCE_URL:jdbc:h2:mem:svc_testing_db}
     username : ${symbol_dollar}{DATASOURCE_USERNAME:postgres}
     password : ${symbol_dollar}{DATASOURCE_PASSWORD:postgres}
     hikari :

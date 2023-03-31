@@ -15,7 +15,7 @@ volumes :
 steps :
 
   - name : build
-    image : docker-registry.c2a2.com/ujar/maven:3-openjdk-17-slim
+    image : docker-registry.c2a2.com/ujar/svc-builder:openjdk-19-slim
     pull : if-not-exists
     volumes :
       - name : m2cache
@@ -30,10 +30,11 @@ steps :
       SONAR_TOKEN :
         from_secret : SONAR_TOKEN
     commands :
-      - mvn clean compile test-compile -P default -B  --file pom.xml -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
-      - mvn pmd:check -P default -B --file pom.xml -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
-      - mvn com.github.spotbugs:spotbugs-maven-plugin:4.7.3.0:check -P default -Dspotbugs.xmlOutput=true -Dspotbugs.failOnError=true -Dspotbugs.excludeFilterFile=../spotbugs-exclude.xml -Dspotbugs.includeTests=true  --file pom.xml -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
-      - mvn org.jacoco:jacoco-maven-plugin:prepare-agent integration-test package org.jacoco:jacoco-maven-plugin:report sonar:sonar -P default -Dsonar.host.url=${symbol_dollar}SONAR_HOST -Dsonar.login=${symbol_dollar}SONAR_TOKEN -Dsonar.projectKey=${groupId}:${artifactId} -Dsonar.projectName=${groupId}:${artifactId} --batch-mode --file pom.xml -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
+      - mvn clean compile test-compile --batch-mode -Dstyle.color=always --file pom.xml -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
+      - mvn pmd:check --batch-mode -Dstyle.color=always --file pom.xml -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
+      - mvn -Dstyle.color=always com.github.spotbugs:spotbugs-maven-plugin:4.7.3.0:check -Dspotbugs.xmlOutput=true -Dspotbugs.failOnError=true -Dspotbugs.excludeFilterFile=../spotbugs-exclude.xml -Dspotbugs.includeTests=true  --file pom.xml -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
+      - mvn -Dstyle.color=always org.jacoco:jacoco-maven-plugin:prepare-agent verify org.jacoco:jacoco-maven-plugin:report sonar:sonar -Dsonar.host.url=${symbol_dollar}SONAR_HOST -Dsonar.login=${symbol_dollar}SONAR_TOKEN -Dsonar.projectKey=${groupId}:${artifactId} -Dsonar.projectName=${groupId}:${artifactId} --batch-mode --file pom.xml -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
+      - mvn package -Dstyle.color=always -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true --batch-mode --file pom.xml -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
     when :
       event :
         - push
@@ -42,7 +43,7 @@ steps :
   - name : publish-snapshot-jar
     depends_on :
       - build
-    image : docker-registry.c2a2.com/ujar/maven:3-openjdk-17-slim
+    image : docker-registry.c2a2.com/ujar/svc-builder:openjdk-19-slim
     pull : if-not-exists
     volumes :
       - name : m2cache
@@ -53,18 +54,18 @@ steps :
       DEPLOYER_PASSWORD :
         from_secret : DEPLOYER_PASSWORD
     commands :
-      - mvn deploy -DskipTests=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD -DaltDeploymentRepository=ujar-snapshots-repository::default::https://nexus.c2a2.com/repository/maven-snapshots
+      - mvn deploy -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD -DaltDeploymentRepository=ujar-snapshots-repository::default::https://nexus.c2a2.com/repository/maven-snapshots
     when :
       branch :
         include :
-          - "feature/*"
           - "develop"
+          - "prerelease/*"
           - "*.*.x"
 
   - name : publish-release-jar
     depends_on :
       - build
-    image : docker-registry.c2a2.com/ujar/maven:3-openjdk-17-slim
+    image : docker-registry.c2a2.com/ujar/svc-builder:openjdk-19-slim
     pull : if-not-exists
     volumes :
       - name : m2cache
@@ -75,14 +76,28 @@ steps :
       DEPLOYER_PASSWORD :
         from_secret : DEPLOYER_PASSWORD
     commands :
-      - mvn deploy -DskipTests=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD -DaltDeploymentRepository=ujar-releases-repository::default::https://nexus.c2a2.com/repository/maven-releases
+      - mvn deploy -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD -DaltDeploymentRepository=ujar-releases-repository::default::https://nexus.c2a2.com/repository/maven-releases
     when :
       ref :
         - "refs/tags/*"
 
+  - name : create-github-release
+    image : plugins/github-release
+    settings :
+      api_key :
+        from_secret : GITHUB_API_KEY
+      title : ${DRONE_TAG}
+      note : "**Full Changelog**: https://github.com/${DRONE_REPO}/commits/${DRONE_TAG}"
+      files : ./target/*.jar
+    when :
+      ref :
+        - "refs/tags/*"
+    depends_on :
+      - publish-release-jar
+
   - name : build-container-with-feature
     depends_on :
-      - publish-snapshot-jar
+      - build
     image : plugins/docker
     settings :
       dockerfile : .drone/c2a2/Dockerfile
@@ -94,6 +109,8 @@ steps :
         from_secret : DOCKER_PASSWORD
       repo : docker-registry.c2a2.com/ujar/${artifactId}
       registry : docker-registry.c2a2.com
+      force_tag : true
+      build_args : BUILD_VERSION=${symbol_dollar}{DRONE_COMMIT}
       tags :
         - ${symbol_dollar}{DRONE_BRANCH:22}
     when :
@@ -115,6 +132,8 @@ steps :
         from_secret : DOCKER_PASSWORD
       repo : docker-registry.c2a2.com/ujar/${artifactId}
       registry : docker-registry.c2a2.com
+      force_tag : true
+      build_args : BUILD_VERSION=${symbol_dollar}{DRONE_COMMIT}
       tags :
         - ${symbol_dollar}{DRONE_TAG}
         - "latest"
@@ -142,7 +161,7 @@ volumes :
 
 steps :
   - name : create-release-tag
-    image : docker-registry.c2a2.com/ujar/maven:3-openjdk-17-slim
+    image : docker-registry.c2a2.com/ujar/svc-builder:openjdk-19-slim
     pull : if-not-exists
     volumes :
       - name : m2cache

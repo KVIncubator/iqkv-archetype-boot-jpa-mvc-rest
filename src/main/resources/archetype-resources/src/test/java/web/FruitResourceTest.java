@@ -25,13 +25,7 @@ import ${package}.entity.Fruit;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class FruitControllerTest {
-
-  private final MockMvc mvc;
-
-  FruitControllerTest(@Autowired final MockMvc mvc) {
-    this.mvc = mvc;
-  }
+record FruitResourceTest(@Autowired MockMvc mvc) {
 
   @Test
   @SneakyThrows

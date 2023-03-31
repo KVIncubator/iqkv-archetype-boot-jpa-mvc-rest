@@ -7,13 +7,18 @@
         <requiredProperty key="groupId"/>
         <requiredProperty key="artifactId"/>
         <requiredProperty key="artifactIdWithoutHyphens">
-            <defaultValue>${artifactId}</defaultValue>
+            <defaultValue>${artifactId.replaceAll("-", "")}</defaultValue>
         </requiredProperty>
         <requiredProperty key="package">
             <defaultValue>${groupId}.${artifactIdWithoutHyphens}</defaultValue>
         </requiredProperty>
+        <requiredProperty key="mainClass">
+            <defaultValue>
+                ${package.getClass().forName("org.apache.velocity.util.StringUtils").removeAndHump("$artifactId", "-")}Application
+            </defaultValue>
+        </requiredProperty>
         <requiredProperty key="version">
-            <defaultValue>0.1.0-SNAPSHOT</defaultValue>
+            <defaultValue>1.0.0-SNAPSHOT</defaultValue>
         </requiredProperty>
         <requiredProperty key="projectName" />
         <requiredProperty key="projectDescription" />
@@ -64,6 +69,14 @@
             </includes>
         </fileSet>
         <fileSet filtered="true" encoding="UTF-8">
+            <directory>docs</directory>
+            <includes>
+                <include>**/*.yml</include>
+                <include>**/*.json</include>
+                <include>**/*.md</include>
+            </includes>
+        </fileSet>
+        <fileSet filtered="true" encoding="UTF-8">
             <directory>.mvn/wrapper</directory>
             <includes>
                 <include>**/*.java</include>
@@ -79,8 +92,13 @@
         <fileSet filtered="true" encoding="UTF-8">
             <directory>.drone/c2a2</directory>
             <includes>
-                <include>**/*.</include>
                 <include>**/*.yml</include>
+            </includes>
+        </fileSet>
+        <fileSet encoding="UTF-8">
+            <directory>.drone/c2a2</directory>
+            <includes>
+                <include>**/Dockerfile</include>
             </includes>
         </fileSet>
         <fileSet encoding="UTF-8">
@@ -90,11 +108,19 @@
                 <include>**/*.md</include>
             </includes>
         </fileSet>
+        <fileSet encoding="UTF-8">
+            <directory>.husky</directory>
+            <includes>
+                <include>**/*.</include>
+                <include>**/pre-commit</include>
+            </includes>
+        </fileSet>
         <fileSet filtered="true" encoding="UTF-8">
             <directory/>
             <includes>
                 <include>README.md</include>
                 <include>docker-compose.dev.yml</include>
+                <include>package.json</include>
             </includes>
         </fileSet>
         <fileSet encoding="UTF-8">
