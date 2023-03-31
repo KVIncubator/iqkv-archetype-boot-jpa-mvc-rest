@@ -1,18 +1,17 @@
 #set( $symbol_pound = '#' )
-
 ${symbol_pound} ${projectName} (${groupId}:${artifactId})
 
 ${projectDescription}
 
 ${symbol_pound}${symbol_pound} Technology stack
 
-Java 17, Spring Boot, Spring Data, Postgres.
+Java 19, Spring Boot, Spring Data, Postgres.
 
 ${symbol_pound}${symbol_pound} Prerequisites
 
 The following items should be installed in your system:
 
-* Java 17 or newer.
+* Java 19 or newer.
 * git command line tool (https://help.github.com/articles/set-up-git)
 * Your preferred IDE (IDEA preferably)
 
@@ -35,7 +34,13 @@ cd ${artifactId}
 java -jar target/*.jar
 ```
 
-You can then access Swagger UI here: http://localhost:8080/swagger-ui.html
+You might also want to use Maven's `spring-boot:run` goal - applications run in an exploded form, as they do in your IDE:
+
+```
+./mvnw spring-boot:run -Dspring-boot.run.profiles=local -P dev
+```
+
+Now you can access to the Swagger UI here: http://localhost:8080/swagger-ui.html
 
 ${symbol_pound}${symbol_pound}${symbol_pound} Working with Application in your IDE
 
@@ -75,3 +80,16 @@ This project has standard JUnit tests. To run them execute this command:
 ```
 
 It is mandatory to keep test code coverage not below **80** percents and cover all business logic and edge cases.
+
+${symbol_pound}${symbol_pound} Versioning
+
+Project uses a three-segment [CalVer](https://calver.org/) scheme, with a short year in the major version slot, short month in the minor version slot, and micro/patch version in the third
+and final slot.
+
+```
+YY.MM.MICRO
+```
+
+1. **YY** - short year - 6, 16, 106
+1. **MM** - short month - 1, 2 ... 11, 12
+1. **MICRO** -  "patch" segment

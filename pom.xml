@@ -4,7 +4,7 @@
 
     <groupId>org.ujar.archetype</groupId>
     <artifactId>archetype-boot-jpa-restful</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>23.0.0-SNAPSHOT</version>
     <packaging>maven-archetype</packaging>
     <description>Maven Archetype for Spring Boot Java REST API + JPA</description>
     <licenses>
@@ -30,9 +30,9 @@
     </developers>
 
     <parent>
-        <groupId>org.ujar.parent</groupId>
-        <artifactId>ujar-parent-pom</artifactId>
-        <version>0.2.0-SNAPSHOT</version>
+        <groupId>org.ujar.boot</groupId>
+        <artifactId>ujar-boot-parent-pom</artifactId>
+        <version>23.0.0-SNAPSHOT</version>
         <relativePath/>
     </parent>
 

@@ -1,0 +1,23 @@
+{
+    "name": "archetype-boot-jpa-restful",
+    "version": "23.0.0",
+    "description": "Provide an optional Git commit hooks.",
+    "private": true,
+    "scripts": {
+        "postinstall": "husky install"
+    },
+    "author": "Dima Denysenko",
+    "license": "Apache-2.0",
+    "devDependencies": {
+        "husky": "8.0.3",
+        "prettier": "2.8.4",
+        "prettier-plugin-java": "2.1.0",
+        "prettier-plugin-packagejson": "2.4.3"
+    },
+    "engines": {
+        "node": ">=16.17.0"
+    },
+    "cacheDirectories": [
+        "node_modules"
+    ]
+}

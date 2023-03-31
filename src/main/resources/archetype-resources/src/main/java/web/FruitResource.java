@@ -29,14 +29,13 @@ import org.ujar.boot.restful.web.ErrorResponse;
 import org.ujar.boot.restful.web.PaginationRequest;
 import ${package}.entity.Fruit;
 import ${package}.repository.FruitRepository;
-import ${package}.web.dto.FruitDto;
 
 @RestController
-@Tag(name = "Fruit controller", description = "API endpoints for managing fruit entity.")
+@Tag(name = "Fruit Resource", description = "API endpoints for managing fruit entity.")
 @RequestMapping("/api/v1/fruits")
 @Validated
 @RequiredArgsConstructor
-class FruitController {
+class FruitResource {
 
   private final FruitRepository fruitRepository;
 
@@ -132,4 +131,6 @@ class FruitController {
     return HttpStatus.OK;
   }
 
+  record FruitDto(String name) {
+  }
 }

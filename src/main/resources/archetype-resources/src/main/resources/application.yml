@@ -7,7 +7,7 @@ ujar :
     version : '${symbol_at}project.version${symbol_at}'
 
 git :
-  commit : '@git.commit.id@'
+  commit : '@git.commit.id.abbrev@'
   build_time : '@git.build.time@'
 
 info :
@@ -25,7 +25,7 @@ spring :
     change-log : migrations/master.xml
   datasource :
     type : com.zaxxer.hikari.HikariDataSource
-    url : ${symbol_dollar}{DATASOURCE_URL:jdbc:postgresql://localhost:5432/sa_test_db}
+    url : ${symbol_dollar}{DATASOURCE_URL:jdbc:postgresql://localhost:5432/svc_testing_db}
     username : ${symbol_dollar}{DATASOURCE_USERNAME:postgres}
     password : ${symbol_dollar}{DATASOURCE_PASSWORD:postgres}
     driver-class-name : ${symbol_dollar}{DATASOURCE_DRIVER:org.postgresql.Driver}
@@ -101,7 +101,7 @@ management :
       enabled : true
 
 springdoc :
-  show-actuator : true
+  show-actuator : false
   swagger-ui :
     config-url : ${symbol_dollar}{SWAGGER_UI_RELATIVE_PATH:/}v3/api-docs/swagger-config
     url : ${symbol_dollar}{SWAGGER_UI_RELATIVE_PATH:/}v3/api-docs

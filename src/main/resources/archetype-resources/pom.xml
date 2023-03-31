@@ -17,18 +17,20 @@
         </license>
     </licenses>
     <parent>
-        <groupId>org.ujar.parent</groupId>
-        <artifactId>ujar-parent-pom</artifactId>
-        <version>0.2.0-SNAPSHOT</version>
+        <groupId>org.ujar.boot</groupId>
+        <artifactId>ujar-boot-parent-pom</artifactId>
+        <version>23.0.0-SNAPSHOT</version>
     </parent>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>19</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <sonar.exclusions>**/*Application.java</sonar.exclusions>
         <sonar.coverage.exclusions>**/*Config*.java,**/*Properties.java,**/*Test.java,**/Test*.java</sonar.coverage.exclusions>
-        <start-class>${package}.Application</start-class>
+        <checkstyle.skip>true</checkstyle.skip>
+        <maven.gitcommitid.skip>false</maven.gitcommitid.skip>
+        <start-class>${package}.${mainClass}</start-class>
     </properties>
 
     <dependencies>
@@ -59,6 +61,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.liquibase</groupId>
@@ -140,8 +143,24 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
                 <groupId>io.github.git-commit-id</groupId>
                 <artifactId>git-commit-id-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

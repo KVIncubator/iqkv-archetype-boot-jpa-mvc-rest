@@ -7,5 +7,6 @@ ${symbol_dollar}{AnsiColor.GREEN} | | | |  _   | |  / _` | | '__|
 ${symbol_dollar}{AnsiColor.GREEN} | |_| | | |__| | | (_| | | |   
 ${symbol_dollar}{AnsiColor.GREEN}  ${symbol_escape}__,_|  ${symbol_escape}____/   ${symbol_escape}__,_| |_|   
 ${symbol_dollar}{AnsiColor.BLUE} ===============================
-${symbol_dollar}{AnsiColor.BLUE}  ${symbol_dollar}{application.title} ( ${symbol_dollar}{application.version} )
+${symbol_dollar}{AnsiColor.BLUE}  ${projectName}
 ${symbol_dollar}{AnsiColor.BLUE} ===============================
+${symbol_dollar}{AnsiColor.BLACK}

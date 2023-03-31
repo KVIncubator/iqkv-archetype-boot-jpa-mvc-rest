@@ -14,7 +14,7 @@ volumes :
 steps :
 
   - name : build
-    image : docker-registry.c2a2.com/ujar/maven:3-openjdk-17-slim
+    image : docker-registry.c2a2.com/ujar/svc-builder:openjdk-19-slim
     pull : if-not-exists
     volumes :
       - name : m2cache
@@ -29,10 +29,11 @@ steps :
       SONAR_TOKEN :
         from_secret : SONAR_TOKEN
     commands :
-      - mvn clean compile test-compile -P default -B  --file pom.xml -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD
-      - mvn pmd:check -P default -B --file pom.xml -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD
-      - mvn com.github.spotbugs:spotbugs-maven-plugin:4.7.3.0:check -P default -Dspotbugs.xmlOutput=true -Dspotbugs.failOnError=true -Dspotbugs.excludeFilterFile=../spotbugs-exclude.xml -Dspotbugs.includeTests=true  --file pom.xml -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD
-      - mvn org.jacoco:jacoco-maven-plugin:prepare-agent integration-test package org.jacoco:jacoco-maven-plugin:report sonar:sonar -P default -Dsonar.host.url=$SONAR_HOST -Dsonar.login=$SONAR_TOKEN -Dsonar.projectKey=org.ujar.archetype:archetype-boot-jpa-restful -Dsonar.projectName=org.ujar.archetype:archetype-boot-jpa-restful --batch-mode --file pom.xml -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD
+      - mvn clean compile test-compile --batch-mode -Dstyle.color=always --file pom.xml -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD
+      - mvn pmd:check --batch-mode -Dstyle.color=always --file pom.xml -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD
+      - mvn -Dstyle.color=always com.github.spotbugs:spotbugs-maven-plugin:4.7.3.0:check -Dspotbugs.xmlOutput=true -Dspotbugs.failOnError=true -Dspotbugs.excludeFilterFile=../spotbugs-exclude.xml -Dspotbugs.includeTests=true  --file pom.xml -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD
+      - mvn -Dstyle.color=always org.jacoco:jacoco-maven-plugin:prepare-agent verify org.jacoco:jacoco-maven-plugin:report sonar:sonar -Dsonar.host.url=$SONAR_HOST -Dsonar.login=$SONAR_TOKEN -Dsonar.projectKey=org.ujar.archetype:archetype-boot-jpa-restful -Dsonar.projectName=org.ujar.archetype:archetype-boot-jpa-restful --batch-mode --file pom.xml -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD
+      - mvn package -Dstyle.color=always -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true --batch-mode --file pom.xml -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD
     when :
       event :
         - push
@@ -41,7 +42,7 @@ steps :
   - name : publish-snapshot-jar
     depends_on :
       - build
-    image : docker-registry.c2a2.com/ujar/maven:3-openjdk-17-slim
+    image : docker-registry.c2a2.com/ujar/svc-builder:openjdk-19-slim
     pull : if-not-exists
     volumes :
       - name : m2cache
@@ -52,18 +53,18 @@ steps :
       DEPLOYER_PASSWORD :
         from_secret : DEPLOYER_PASSWORD
     commands :
-      - mvn deploy -DskipTests=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD -DaltDeploymentRepository=ujar-snapshots-repository::default::https://nexus.c2a2.com/repository/maven-snapshots
+      - mvn deploy -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD -DaltDeploymentRepository=ujar-snapshots-repository::default::https://nexus.c2a2.com/repository/maven-snapshots
     when :
       branch :
         include :
-          - "feature/*"
           - "develop"
+          - "prerelease/*"
           - "*.*.x"
 
   - name : publish-release-jar
     depends_on :
       - build
-    image : docker-registry.c2a2.com/ujar/maven:3-openjdk-17-slim
+    image : docker-registry.c2a2.com/ujar/svc-builder:openjdk-19-slim
     pull : if-not-exists
     volumes :
       - name : m2cache
@@ -74,10 +75,24 @@ steps :
       DEPLOYER_PASSWORD :
         from_secret : DEPLOYER_PASSWORD
     commands :
-      - mvn deploy -DskipTests=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD -DaltDeploymentRepository=ujar-releases-repository::default::https://nexus.c2a2.com/repository/maven-releases
+      - mvn deploy -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD -DaltDeploymentRepository=ujar-releases-repository::default::https://nexus.c2a2.com/repository/maven-releases
     when :
       ref :
         - "refs/tags/*"
+
+  - name : create-github-release
+    image : plugins/github-release
+    settings :
+      api_key :
+        from_secret : GITHUB_API_KEY
+      title : ${DRONE_TAG}
+      note : "**Full Changelog**: https://github.com/${DRONE_REPO}/commits/${DRONE_TAG}"
+      files : ./target/*.jar
+    when :
+      ref :
+        - "refs/tags/*"
+    depends_on :
+      - publish-release-jar
 
 ---
 
@@ -98,35 +113,35 @@ volumes :
 
 steps :
   - name : create-release-tag
-    image : docker-registry.c2a2.com/ujar/maven:3-openjdk-17-slim
+    image : docker-registry.c2a2.com/ujar/svc-builder:openjdk-19-slim
     pull : if-not-exists
     volumes :
       - name : m2cache
         path : /root/.m2
     commands :
-      - echo Prepare new version ${TAG}
-      - mkdir ${TAG}
-      - rmdir ${TAG}
-      - export NEXT_SNAPSHOT=$(increment_version -${INCREMENT_TYPE} ${TAG})-SNAPSHOT
+      - echo Prepare new version ${RELEASE_VERSION}
+      - mkdir ${RELEASE_VERSION}
+      - rmdir ${RELEASE_VERSION}
+      - export NEXT_SNAPSHOT=${SNAPSHOT_VERSION}-SNAPSHOT
       - export GIT_AUTHOR_NAME=$${SVC_BUILD_GIT_USERNAME}
       - export GIT_AUTHOR_EMAIL=$${SVC_BUILD_GIT_EMAIL}
       - export GIT_COMMITTER_NAME=$${SVC_BUILD_GIT_USERNAME}
       - export GIT_COMMITTER_EMAIL=$${SVC_BUILD_GIT_EMAIL}
       - git remote set-url --push origin ${DRONE_GIT_SSH_URL}
-      - git checkout -b v${TAG}
+      - git checkout -b v${RELEASE_VERSION}
       - mvn versions:set -DremoveSnapshot
-      - mvn versions:set -DnewVersion=${TAG}
+      - mvn versions:set -DnewVersion=${RELEASE_VERSION}
       - mvn versions:update-parent
       - >-
-        git commit -a -m "feat: bump version to $${TAG}"
-      - git tag ${TAG} && git push origin ${TAG}
-      - echo "✅ Release tag ${TAG} was created."
+        git commit -a -m "feat: bump version to $${RELEASE_VERSION}"
+      - git tag ${RELEASE_VERSION} && git push origin ${RELEASE_VERSION}
+      - echo "✅ Release tag ${RELEASE_VERSION} was created."
       - sleep 10
-      - git tag -d ${TAG} && git checkout ${DRONE_COMMIT_BRANCH} && git branch -D v${TAG}
+      - git tag -d ${RELEASE_VERSION} && git checkout ${DRONE_COMMIT_BRANCH} && git branch -D v${RELEASE_VERSION}
       - mvn versions:set -DnewVersion=$${NEXT_SNAPSHOT}
       - mvn versions:update-parent -DallowSnapshots=true
       - >-
         git commit -a -m "feat: create new $${NEXT_SNAPSHOT}"
       - git push origin ${DRONE_COMMIT_BRANCH}
       - echo "✅ Started $${NEXT_SNAPSHOT}."
-      - echo "🚀 Good job, new version ${TAG} was released successfully."
+      - echo "🚀 Good job, new version ${RELEASE_VERSION} was released successfully."
