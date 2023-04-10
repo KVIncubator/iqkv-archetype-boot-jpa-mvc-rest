@@ -1,133 +1,133 @@
-openapi: 3.0.1
-info:
-  title: ${artifactId}
-  description: ${projectDescription}
-  version: ${version}
-servers:
-  - url: ''
-tags:
-  - name: Fruit Resource
-    description: API endpoints for managing fruit entity.
-paths:
-  /api/v1/fruits/{id}:
-    get:
-      tags:
+openapi : 3.0.1
+info :
+  title : ${artifactId}
+  description : ${projectDescription}
+  version : ${version}
+servers :
+  - url : ''
+tags :
+  - name : Fruit Resource
+    description : API endpoints for managing fruit entity.
+paths :
+  /api/v1/fruits/{id} :
+    get :
+      tags :
         - Fruit Resource
-      description: Retrieve fruit by id.
-      operationId: findById
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: Success
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/Fruit'
-        '400':
-          description: Bad request
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not found
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '405':
-          description: Method Not Allowed
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponseInvalidHttpMethodMeta'
-        '415':
-          description: Unsupported Media Type
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponseInvalidContentTypeMeta'
-        '500':
-          description: Internal error
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    put:
-      tags:
+      description : Retrieve fruit by id.
+      operationId : findById
+      parameters :
+        - name : id
+          in : path
+          required : true
+          schema :
+            type : integer
+            format : int64
+      responses :
+        '200' :
+          description : Success
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/Fruit'
+        '400' :
+          description : Bad request
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponse'
+        '404' :
+          description : Not found
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponse'
+        '405' :
+          description : Method Not Allowed
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponseInvalidHttpMethodMeta'
+        '415' :
+          description : Unsupported Media Type
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponseInvalidContentTypeMeta'
+        '500' :
+          description : Internal error
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponse'
+    put :
+      tags :
         - Fruit Resource
-      description: Updates an existing fruit.
-      operationId: update
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FruitDto'
-        required: true
-      responses:
-        '200':
-          description: Success
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/Fruit'
-        '400':
-          description: Bad request
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '405':
-          description: Method Not Allowed
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponseInvalidHttpMethodMeta'
-        '415':
-          description: Unsupported Media Type
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponseInvalidContentTypeMeta'
-        '500':
-          description: Internal error
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    delete:
-      tags:
+      description : Updates an existing fruit.
+      operationId : update
+      parameters :
+        - name : id
+          in : path
+          required : true
+          schema :
+            type : integer
+            format : int64
+      requestBody :
+        content :
+          application/json :
+            schema :
+              $ref : '#/components/schemas/FruitDto'
+        required : true
+      responses :
+        '200' :
+          description : Success
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/Fruit'
+        '400' :
+          description : Bad request
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponse'
+        '405' :
+          description : Method Not Allowed
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponseInvalidHttpMethodMeta'
+        '415' :
+          description : Unsupported Media Type
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponseInvalidContentTypeMeta'
+        '500' :
+          description : Internal error
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponse'
+    delete :
+      tags :
         - Fruit Resource
-      description: Delete fruit.
-      operationId: delete
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: Success
-          content:
-            '*/*':
-              schema:
-                type: string
-                enum:
+      description : Delete fruit.
+      operationId : delete
+      parameters :
+        - name : id
+          in : path
+          required : true
+          schema :
+            type : integer
+            format : int64
+      responses :
+        '200' :
+          description : Success
+          content :
+            '*/*' :
+              schema :
+                type : string
+                enum :
                   - 100 CONTINUE
                   - 101 SWITCHING_PROTOCOLS
                   - 102 PROCESSING
@@ -197,266 +197,266 @@ paths:
                   - 509 BANDWIDTH_LIMIT_EXCEEDED
                   - 510 NOT_EXTENDED
                   - 511 NETWORK_AUTHENTICATION_REQUIRED
-        '400':
-          description: Bad request
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '405':
-          description: Method Not Allowed
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponseInvalidHttpMethodMeta'
-        '415':
-          description: Unsupported Media Type
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponseInvalidContentTypeMeta'
-        '500':
-          description: Internal error
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /api/v1/fruits:
-    get:
-      tags:
+        '400' :
+          description : Bad request
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponse'
+        '405' :
+          description : Method Not Allowed
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponseInvalidHttpMethodMeta'
+        '415' :
+          description : Unsupported Media Type
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponseInvalidContentTypeMeta'
+        '500' :
+          description : Internal error
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponse'
+  /api/v1/fruits :
+    get :
+      tags :
         - Fruit Resource
-      description: Get all the fruits.
-      operationId: findAll
-      parameters:
-        - name: page
-          in: query
-          description: Page number
-          required: false
-          schema:
-            minimum: 0
-            type: integer
-            format: int32
-        - name: size
-          in: query
-          description: Page size
-          required: false
-          schema:
-            maximum: 200
-            minimum: 1
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: Success
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/PageFruit'
-        '400':
-          description: Bad request
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '405':
-          description: Method Not Allowed
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponseInvalidHttpMethodMeta'
-        '415':
-          description: Unsupported Media Type
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponseInvalidContentTypeMeta'
-        '500':
-          description: Internal error
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    post:
-      tags:
+      description : Get all the fruits.
+      operationId : findAll
+      parameters :
+        - name : page
+          in : query
+          description : Page number
+          required : false
+          schema :
+            minimum : 0
+            type : integer
+            format : int32
+        - name : size
+          in : query
+          description : Page size
+          required : false
+          schema :
+            maximum : 200
+            minimum : 1
+            type : integer
+            format : int32
+      responses :
+        '200' :
+          description : Success
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/PageFruit'
+        '400' :
+          description : Bad request
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponse'
+        '405' :
+          description : Method Not Allowed
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponseInvalidHttpMethodMeta'
+        '415' :
+          description : Unsupported Media Type
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponseInvalidContentTypeMeta'
+        '500' :
+          description : Internal error
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponse'
+    post :
+      tags :
         - Fruit Resource
-      description: Create a new fruit.
-      operationId: create
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FruitDto'
-        required: true
-      responses:
-        '201':
-          description: Success
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/Fruit'
-        '400':
-          description: Bad request
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '405':
-          description: Method Not Allowed
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponseInvalidHttpMethodMeta'
-        '415':
-          description: Unsupported Media Type
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponseInvalidContentTypeMeta'
-        '500':
-          description: Internal error
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-components:
-  schemas:
-    ErrorInvalidContentTypeMeta:
-      type: object
-      properties:
-        code:
-          type: string
-        detail:
-          type: string
-        meta:
-          $ref: '#/components/schemas/InvalidContentTypeMeta'
-    ErrorResponseInvalidContentTypeMeta:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorInvalidContentTypeMeta'
-    InvalidContentTypeMeta:
-      type: object
-      properties:
-        invalidType:
-          type: string
-        supportedTypes:
-          type: array
-          items:
-            type: string
-    ErrorInvalidHttpMethodMeta:
-      type: object
-      properties:
-        code:
-          type: string
-        detail:
-          type: string
-        meta:
-          $ref: '#/components/schemas/InvalidHttpMethodMeta'
-    ErrorResponseInvalidHttpMethodMeta:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorInvalidHttpMethodMeta'
-    InvalidHttpMethodMeta:
-      type: object
-      properties:
-        invalidMethod:
-          type: string
-        allowedMethods:
-          type: array
-          items:
-            type: string
-    ErrorObject:
-      type: object
-      properties:
-        code:
-          type: string
-        detail:
-          type: string
-        meta:
-          type: object
-    ErrorResponse:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorObject'
-    FruitDto:
-      type: object
-      properties:
-        name:
-          type: string
-    Fruit:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          maxLength: 120
-          minLength: 2
-          type: string
-    PageFruit:
-      type: object
-      properties:
-        totalPages:
-          type: integer
-          format: int32
-        totalElements:
-          type: integer
-          format: int64
-        size:
-          type: integer
-          format: int32
-        content:
-          type: array
-          items:
-            $ref: '#/components/schemas/Fruit'
-        number:
-          type: integer
-          format: int32
-        sort:
-          $ref: '#/components/schemas/SortObject'
-        first:
-          type: boolean
-        last:
-          type: boolean
-        numberOfElements:
-          type: integer
-          format: int32
-        pageable:
-          $ref: '#/components/schemas/PageableObject'
-        empty:
-          type: boolean
-    PageableObject:
-      type: object
-      properties:
-        offset:
-          type: integer
-          format: int64
-        sort:
-          $ref: '#/components/schemas/SortObject'
-        pageNumber:
-          type: integer
-          format: int32
-        pageSize:
-          type: integer
-          format: int32
-        paged:
-          type: boolean
-        unpaged:
-          type: boolean
-    SortObject:
-      type: object
-      properties:
-        empty:
-          type: boolean
-        sorted:
-          type: boolean
-        unsorted:
-          type: boolean
+      description : Create a new fruit.
+      operationId : create
+      requestBody :
+        content :
+          application/json :
+            schema :
+              $ref : '#/components/schemas/FruitDto'
+        required : true
+      responses :
+        '201' :
+          description : Success
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/Fruit'
+        '400' :
+          description : Bad request
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponse'
+        '405' :
+          description : Method Not Allowed
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponseInvalidHttpMethodMeta'
+        '415' :
+          description : Unsupported Media Type
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponseInvalidContentTypeMeta'
+        '500' :
+          description : Internal error
+          content :
+            '*/*' :
+              schema :
+                $ref : '#/components/schemas/ErrorResponse'
+components :
+  schemas :
+    ErrorInvalidContentTypeMeta :
+      type : object
+      properties :
+        code :
+          type : string
+        detail :
+          type : string
+        meta :
+          $ref : '#/components/schemas/InvalidContentTypeMeta'
+    ErrorResponseInvalidContentTypeMeta :
+      type : object
+      properties :
+        errors :
+          type : array
+          items :
+            $ref : '#/components/schemas/ErrorInvalidContentTypeMeta'
+    InvalidContentTypeMeta :
+      type : object
+      properties :
+        invalidType :
+          type : string
+        supportedTypes :
+          type : array
+          items :
+            type : string
+    ErrorInvalidHttpMethodMeta :
+      type : object
+      properties :
+        code :
+          type : string
+        detail :
+          type : string
+        meta :
+          $ref : '#/components/schemas/InvalidHttpMethodMeta'
+    ErrorResponseInvalidHttpMethodMeta :
+      type : object
+      properties :
+        errors :
+          type : array
+          items :
+            $ref : '#/components/schemas/ErrorInvalidHttpMethodMeta'
+    InvalidHttpMethodMeta :
+      type : object
+      properties :
+        invalidMethod :
+          type : string
+        allowedMethods :
+          type : array
+          items :
+            type : string
+    ErrorObject :
+      type : object
+      properties :
+        code :
+          type : string
+        detail :
+          type : string
+        meta :
+          type : object
+    ErrorResponse :
+      type : object
+      properties :
+        errors :
+          type : array
+          items :
+            $ref : '#/components/schemas/ErrorObject'
+    FruitDto :
+      type : object
+      properties :
+        name :
+          type : string
+    Fruit :
+      type : object
+      properties :
+        id :
+          type : integer
+          format : int64
+        name :
+          maxLength : 120
+          minLength : 2
+          type : string
+    PageFruit :
+      type : object
+      properties :
+        totalPages :
+          type : integer
+          format : int32
+        totalElements :
+          type : integer
+          format : int64
+        size :
+          type : integer
+          format : int32
+        content :
+          type : array
+          items :
+            $ref : '#/components/schemas/Fruit'
+        number :
+          type : integer
+          format : int32
+        sort :
+          $ref : '#/components/schemas/SortObject'
+        first :
+          type : boolean
+        last :
+          type : boolean
+        numberOfElements :
+          type : integer
+          format : int32
+        pageable :
+          $ref : '#/components/schemas/PageableObject'
+        empty :
+          type : boolean
+    PageableObject :
+      type : object
+      properties :
+        offset :
+          type : integer
+          format : int64
+        sort :
+          $ref : '#/components/schemas/SortObject'
+        pageNumber :
+          type : integer
+          format : int32
+        pageSize :
+          type : integer
+          format : int32
+        paged :
+          type : boolean
+        unpaged :
+          type : boolean
+    SortObject :
+      type : object
+      properties :
+        empty :
+          type : boolean
+        sorted :
+          type : boolean
+        unsorted :
+          type : boolean

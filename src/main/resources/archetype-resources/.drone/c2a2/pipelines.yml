@@ -1,6 +1,5 @@
-#set( $symbol_dollar = '$' )
 kind : pipeline
-name : CI
+name : CodeVerification
 type : docker
 
 trigger :
@@ -12,10 +11,27 @@ volumes :
   - name : m2cache
     host :
       path : /app/.m2
+
 steps :
 
-  - name : build
-    image : docker-registry.c2a2.com/ujar/svc-builder:openjdk-19-slim
+  - name : code-coverage-gate
+    image : docker-registry.c2a2.com/svc-builder:openjdk-19-slim
+    pull : if-not-exists
+    volumes :
+      - name : m2cache
+        path : /root/.m2
+    environment :
+      DEPLOYER_USERNAME :
+        from_secret : DEPLOYER_USERNAME
+      DEPLOYER_PASSWORD :
+        from_secret : DEPLOYER_PASSWORD
+    commands :
+      - mvn clean verify -Dstyle.color=always -Dmaven.javadoc.skip=true -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
+
+  - name : static-analysis-gate
+    depends_on :
+      - code-coverage-gate
+    image : docker-registry.c2a2.com/svc-builder:openjdk-19-slim
     pull : if-not-exists
     volumes :
       - name : m2cache
@@ -30,21 +46,38 @@ steps :
       SONAR_TOKEN :
         from_secret : SONAR_TOKEN
     commands :
-      - mvn clean compile test-compile --batch-mode -Dstyle.color=always --file pom.xml -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
-      - mvn pmd:check --batch-mode -Dstyle.color=always --file pom.xml -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
-      - mvn -Dstyle.color=always com.github.spotbugs:spotbugs-maven-plugin:4.7.3.0:check -Dspotbugs.xmlOutput=true -Dspotbugs.failOnError=true -Dspotbugs.excludeFilterFile=../spotbugs-exclude.xml -Dspotbugs.includeTests=true  --file pom.xml -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
-      - mvn -Dstyle.color=always org.jacoco:jacoco-maven-plugin:prepare-agent verify org.jacoco:jacoco-maven-plugin:report sonar:sonar -Dsonar.host.url=${symbol_dollar}SONAR_HOST -Dsonar.login=${symbol_dollar}SONAR_TOKEN -Dsonar.projectKey=${groupId}:${artifactId} -Dsonar.projectName=${groupId}:${artifactId} --batch-mode --file pom.xml -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
-      - mvn package -Dstyle.color=always -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true --batch-mode --file pom.xml -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
-    when :
-      event :
-        - push
-        - tag
+      - mvn org.apache.maven.plugins:maven-dependency-plugin:3.3.0:copy-dependencies -Dmdep.prependGroupId=true -Dstyle.color=always -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
+      - mvn sonar:sonar '-Dsonar.java.libraries=target/dependency/*.jar' '-Dsonar.java.test.libraries=target/classes,target/dependency/*.jar' -Dsonar.qualitygate.wait=true -Dsonar.qualitygate.timeout=300 -Dsonar.host.url=${symbol_dollar}SONAR_HOST -Dsonar.login=${symbol_dollar}SONAR_TOKEN -Dsonar.projectKey=${symbol_dollar}{DRONE_REPO_OWNER}:${symbol_dollar}{DRONE_REPO_NAME} -Dsonar.projectName=${symbol_dollar}{DRONE_REPO_OWNER}:${symbol_dollar}{DRONE_REPO_NAME} -Dstyle.color=always -Dmaven.javadoc.skip=true --batch-mode -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
+      - mvn pmd:check --batch-mode -Dstyle.color=always -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
+      - mvn com.github.spotbugs:spotbugs-maven-plugin:4.7.3.0:check -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD  -Dspotbugs.xmlOutput=true -Dspotbugs.failOnError=true -Dspotbugs.excludeFilterFile=../spotbugs-exclude.xml -Dspotbugs.includeTests=true -Dstyle.color=always
 
+---
+
+kind : pipeline
+name : ArtifactsPublishing
+type : docker
+
+trigger :
+  event :
+    - push
+    - tag
+  ref :
+    - refs/heads/develop
+    - refs/heads/prerelease*
+    - refs/heads/*.*.x
+    - refs/tags/*
+
+depends_on :
+  - CodeVerification
+
+volumes :
+  - name : m2cache
+    host :
+      path : /app/.m2
+
+steps :
   - name : publish-snapshot-jar
-    depends_on :
-      - build
-    image : docker-registry.c2a2.com/ujar/svc-builder:openjdk-19-slim
-    pull : if-not-exists
+    image : docker-registry.c2a2.com/svc-builder:openjdk-19-slim
     volumes :
       - name : m2cache
         path : /root/.m2
@@ -54,7 +87,7 @@ steps :
       DEPLOYER_PASSWORD :
         from_secret : DEPLOYER_PASSWORD
     commands :
-      - mvn deploy -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD -DaltDeploymentRepository=ujar-snapshots-repository::default::https://nexus.c2a2.com/repository/maven-snapshots
+      - mvn deploy -Dstyle.color=always -DskipTests -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD -DaltDeploymentRepository=appfactory-snapshots-repository::https://nexus.c2a2.com/repository/maven-snapshots
     when :
       branch :
         include :
@@ -63,9 +96,7 @@ steps :
           - "*.*.x"
 
   - name : publish-release-jar
-    depends_on :
-      - build
-    image : docker-registry.c2a2.com/ujar/svc-builder:openjdk-19-slim
+    image : docker-registry.c2a2.com/svc-builder:openjdk-19-slim
     pull : if-not-exists
     volumes :
       - name : m2cache
@@ -76,7 +107,7 @@ steps :
       DEPLOYER_PASSWORD :
         from_secret : DEPLOYER_PASSWORD
     commands :
-      - mvn deploy -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD -DaltDeploymentRepository=ujar-releases-repository::default::https://nexus.c2a2.com/repository/maven-releases
+      - mvn deploy -Dstyle.color=always -DskipTests -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD -DaltDeploymentRepository=appfactory-releases-repository::https://nexus.c2a2.com/repository/maven-releases
     when :
       ref :
         - "refs/tags/*"
@@ -87,7 +118,7 @@ steps :
       api_key :
         from_secret : GITHUB_API_KEY
       title : ${DRONE_TAG}
-      note : "**Full Changelog**: https://github.com/${DRONE_REPO}/commits/${DRONE_TAG}"
+      note : "**Full Changelog**: https://github.com/${symbol_dollar}{DRONE_REPO}/commits/${symbol_dollar}{DRONE_TAG}"
       files : ./target/*.jar
     when :
       ref :
@@ -95,19 +126,53 @@ steps :
     depends_on :
       - publish-release-jar
 
+---
+
+kind : pipeline
+name : DockerImagePublishing
+type : docker
+
+trigger :
+  event :
+    - push
+    - tag
+
+depends_on :
+  - ArtifactsPublishing
+
+volumes :
+  - name : m2cache
+    host :
+      path : /app/.m2
+
+steps :
+  - name : package-jar
+    image : docker-registry.c2a2.com/svc-builder:openjdk-19-slim
+    pull : if-not-exists
+    volumes :
+      - name : m2cache
+        path : /root/.m2
+    environment :
+      DEPLOYER_USERNAME :
+        from_secret : DEPLOYER_USERNAME
+      DEPLOYER_PASSWORD :
+        from_secret : DEPLOYER_PASSWORD
+    commands :
+      - mvn package -Dstyle.color=always -DskipTests -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true --batch-mode -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
+
   - name : build-container-with-feature
     depends_on :
-      - build
+      - package-jar
     image : plugins/docker
     settings :
-      dockerfile : .drone/c2a2/Dockerfile
+      dockerfile : ./.drone/c2a2/Dockerfile
       context : ./
       storage_driver : vfs
       username :
         from_secret : DOCKER_USERNAME
       password :
         from_secret : DOCKER_PASSWORD
-      repo : docker-registry.c2a2.com/ujar/${artifactId}
+      repo : docker-registry.c2a2.com/${symbol_dollar}{DRONE_REPO_OWNER}/${symbol_dollar}{DRONE_REPO_NAME}
       registry : docker-registry.c2a2.com
       force_tag : true
       build_args : BUILD_VERSION=${symbol_dollar}{DRONE_COMMIT}
@@ -120,17 +185,17 @@ steps :
 
   - name : build-container-release-image
     depends_on :
-      - publish-release-jar
+      - package-jar
     image : plugins/docker
     settings :
-      dockerfile : .drone/c2a2/Dockerfile
+      dockerfile : ./.drone/c2a2/Dockerfile
       context : ./
       storage_driver : vfs
       username :
         from_secret : DOCKER_USERNAME
       password :
         from_secret : DOCKER_PASSWORD
-      repo : docker-registry.c2a2.com/ujar/${artifactId}
+      repo : docker-registry.c2a2.com/${symbol_dollar}{DRONE_REPO_OWNER}/${symbol_dollar}{DRONE_REPO_NAME}
       registry : docker-registry.c2a2.com
       force_tag : true
       build_args : BUILD_VERSION=${symbol_dollar}{DRONE_COMMIT}
@@ -141,11 +206,10 @@ steps :
       ref :
         - "refs/tags/*"
 
-
 ---
 
 kind : pipeline
-name : CreateReleaseManually
+name : ManualRelease
 type : docker
 trigger :
   event :
@@ -161,35 +225,34 @@ volumes :
 
 steps :
   - name : create-release-tag
-    image : docker-registry.c2a2.com/ujar/svc-builder:openjdk-19-slim
+    failure : ignore
+    image : docker-registry.c2a2.com/svc-builder:openjdk-19-slim
     pull : if-not-exists
     volumes :
       - name : m2cache
         path : /root/.m2
     commands :
-      - echo Prepare new version ${symbol_dollar}{TAG}
-      - mkdir ${symbol_dollar}{TAG}
-      - rmdir ${symbol_dollar}{TAG}
-      - export NEXT_SNAPSHOT=${symbol_dollar}(increment_version -${symbol_dollar}{INCREMENT_TYPE} ${symbol_dollar}{TAG})-SNAPSHOT
+      - echo Prepare new version ${symbol_dollar}{RELEASE_VERSION}
+      - export NEXT_SNAPSHOT=${symbol_dollar}{SNAPSHOT_VERSION}-SNAPSHOT
       - export GIT_AUTHOR_NAME=${symbol_dollar}${symbol_dollar}{SVC_BUILD_GIT_USERNAME}
       - export GIT_AUTHOR_EMAIL=${symbol_dollar}${symbol_dollar}{SVC_BUILD_GIT_EMAIL}
       - export GIT_COMMITTER_NAME=${symbol_dollar}${symbol_dollar}{SVC_BUILD_GIT_USERNAME}
       - export GIT_COMMITTER_EMAIL=${symbol_dollar}${symbol_dollar}{SVC_BUILD_GIT_EMAIL}
       - git remote set-url --push origin ${symbol_dollar}{DRONE_GIT_SSH_URL}
-      - git checkout -b v${symbol_dollar}{TAG}
+      - git checkout -b v${symbol_dollar}{RELEASE_VERSION}
       - mvn versions:set -DremoveSnapshot
-      - mvn versions:set -DnewVersion=${symbol_dollar}{TAG}
+      - mvn versions:set -DnewVersion=${symbol_dollar}{RELEASE_VERSION}
       - mvn versions:update-parent
       - >-
-        git commit -a -m "feat: bump version to ${symbol_dollar}${symbol_dollar}{TAG}"
-      - git tag ${symbol_dollar}{TAG} && git push origin ${symbol_dollar}{TAG}
-      - echo "✅ Release tag ${symbol_dollar}{TAG} was created."
+        git commit -a -m "feat: bump version to ${symbol_dollar}${symbol_dollar}{RELEASE_VERSION}"
+      - git tag ${symbol_dollar}{RELEASE_VERSION} && git push origin ${symbol_dollar}{RELEASE_VERSION}
+      - echo "✅ Release tag ${symbol_dollar}{RELEASE_VERSION} was created."
       - sleep 10
-      - git tag -d ${symbol_dollar}{TAG} && git checkout ${symbol_dollar}{DRONE_COMMIT_BRANCH} && git branch -D v${symbol_dollar}{TAG}
+      - git tag -d ${symbol_dollar}{RELEASE_VERSION} && git checkout ${symbol_dollar}{DRONE_COMMIT_BRANCH} && git branch -D v${symbol_dollar}{RELEASE_VERSION}
       - mvn versions:set -DnewVersion=${symbol_dollar}${symbol_dollar}{NEXT_SNAPSHOT}
       - mvn versions:update-parent -DallowSnapshots=true
       - >-
         git commit -a -m "feat: create new ${symbol_dollar}${symbol_dollar}{NEXT_SNAPSHOT}"
       - git push origin ${symbol_dollar}{DRONE_COMMIT_BRANCH}
       - echo "✅ Started ${symbol_dollar}${symbol_dollar}{NEXT_SNAPSHOT}."
-      - echo "🚀 Good job, new version ${symbol_dollar}{TAG} was released successfully."
+      - echo "🚀 Good job, new version ${symbol_dollar}{RELEASE_VERSION} was released successfully."

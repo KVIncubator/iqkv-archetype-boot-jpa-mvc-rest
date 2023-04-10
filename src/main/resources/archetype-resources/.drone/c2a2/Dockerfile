@@ -1,4 +1,4 @@
-FROM docker-registry.c2a2.com/ujar/jdk:openjdk-19-slim
+FROM docker-registry.c2a2.com/jdk:openjdk-19-slim
 ARG BUILD_VERSION
 ENV APPLICATION_BUILD_VERSION=$BUILD_VERSION
 WORKDIR /opt/app

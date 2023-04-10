@@ -30,7 +30,9 @@ public class Fruit {
   @Id
   @SequenceGenerator(
       name = "fruit_id_seq",
-      sequenceName = "fruit_id_seq"
+      sequenceName = "fruit_id_seq",
+      initialValue = 1,
+      allocationSize = 1
   )
   @GeneratedValue(
       strategy = GenerationType.SEQUENCE,
