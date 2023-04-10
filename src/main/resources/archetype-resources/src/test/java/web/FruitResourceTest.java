@@ -82,15 +82,15 @@ record FruitResourceTest(@Autowired MockMvc mvc) {
                 {
                    "content":[
                       {
-                         "id":1001,
+                         "id":1,
                          "name":"Apple"
                       },
                       {
-                         "id":1002,
+                         "id":2,
                          "name":"Banana"
                       },
                       {
-                         "id":1003,
+                         "id":3,
                          "name":"Orange"
                       }
                    ],
@@ -147,7 +147,7 @@ record FruitResourceTest(@Autowired MockMvc mvc) {
   @Test
   void shouldDeleteFruit() {
     final var fruit = new Fruit();
-    fruit.setName("Banana");
+    fruit.setName("Kiwi");
 
     var responseBody = createNewEntity(fruit);
 

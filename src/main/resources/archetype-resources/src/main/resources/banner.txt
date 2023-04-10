@@ -8,5 +8,6 @@ ${symbol_dollar}{AnsiColor.GREEN} | |_| | | |__| | | (_| | | |
 ${symbol_dollar}{AnsiColor.GREEN}  ${symbol_escape}__,_|  ${symbol_escape}____/   ${symbol_escape}__,_| |_|   
 ${symbol_dollar}{AnsiColor.BLUE} ===============================
 ${symbol_dollar}{AnsiColor.BLUE}  ${projectName}
+${symbol_dollar}{AnsiColor.BLUE}  Running Spring Boot ${symbol_dollar}{spring-boot.version}
 ${symbol_dollar}{AnsiColor.BLUE} ===============================
-${symbol_dollar}{AnsiColor.BLACK}
+${symbol_dollar}{AnsiColor.DEFAULT}
