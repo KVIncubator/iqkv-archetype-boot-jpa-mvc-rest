@@ -15,7 +15,7 @@ volumes :
 steps :
 
   - name : code-coverage-gate
-    image : docker-registry.c2a2.com/svc-builder:openjdk-19-slim
+    image : docker-registry.continuousdelivery.store/svc-builder:openjdk-19-slim
     pull : if-not-exists
     volumes :
       - name : m2cache
@@ -31,7 +31,7 @@ steps :
   - name : static-analysis-gate
     depends_on :
       - code-coverage-gate
-    image : docker-registry.c2a2.com/svc-builder:openjdk-19-slim
+    image : docker-registry.continuousdelivery.store/svc-builder:openjdk-19-slim
     pull : if-not-exists
     volumes :
       - name : m2cache
@@ -77,7 +77,7 @@ volumes :
 
 steps :
   - name : publish-snapshot-jar
-    image : docker-registry.c2a2.com/svc-builder:openjdk-19-slim
+    image : docker-registry.continuousdelivery.store/svc-builder:openjdk-19-slim
     volumes :
       - name : m2cache
         path : /root/.m2
@@ -87,7 +87,7 @@ steps :
       DEPLOYER_PASSWORD :
         from_secret : DEPLOYER_PASSWORD
     commands :
-      - mvn deploy -Dstyle.color=always -DskipTests -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD -DaltDeploymentRepository=appfactory-snapshots-repository::https://nexus.c2a2.com/repository/maven-snapshots
+      - mvn deploy -Dstyle.color=always -DskipTests -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD -DaltDeploymentRepository=manufacturing-snapshots-repository::https://nexus.continuousdelivery.store/repository/maven-snapshots
     when :
       branch :
         include :
@@ -96,7 +96,7 @@ steps :
           - "*.*.x"
 
   - name : publish-release-jar
-    image : docker-registry.c2a2.com/svc-builder:openjdk-19-slim
+    image : docker-registry.continuousdelivery.store/svc-builder:openjdk-19-slim
     pull : if-not-exists
     volumes :
       - name : m2cache
@@ -107,7 +107,7 @@ steps :
       DEPLOYER_PASSWORD :
         from_secret : DEPLOYER_PASSWORD
     commands :
-      - mvn deploy -Dstyle.color=always -DskipTests -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD -DaltDeploymentRepository=appfactory-releases-repository::https://nexus.c2a2.com/repository/maven-releases
+      - mvn deploy -Dstyle.color=always -DskipTests -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD -DaltDeploymentRepository=manufacturing-releases-repository::https://nexus.continuousdelivery.store/repository/maven-releases
     when :
       ref :
         - "refs/tags/*"
@@ -146,7 +146,7 @@ volumes :
 steps :
   - name : create-release-tag
     failure : ignore
-    image : docker-registry.c2a2.com/svc-builder:openjdk-19-slim
+    image : docker-registry.continuousdelivery.store/svc-builder:openjdk-19-slim
     pull : if-not-exists
     volumes :
       - name : m2cache

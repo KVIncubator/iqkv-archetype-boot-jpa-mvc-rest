@@ -90,13 +90,13 @@
             </includes>
         </fileSet>
         <fileSet filtered="true" encoding="UTF-8">
-            <directory>.drone/c2a2</directory>
+            <directory>.drone</directory>
             <includes>
                 <include>**/*.yml</include>
             </includes>
         </fileSet>
         <fileSet encoding="UTF-8">
-            <directory>.drone/c2a2</directory>
+            <directory>.drone</directory>
             <includes>
                 <include>**/Dockerfile</include>
             </includes>
