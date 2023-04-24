@@ -198,7 +198,9 @@ steps :
       repo : docker-registry.continuousdelivery.store/${symbol_dollar}{DRONE_REPO_OWNER}/${symbol_dollar}{DRONE_REPO_NAME}
       registry : docker-registry.continuousdelivery.store
       force_tag : true
-      build_args : BUILD_VERSION=${symbol_dollar}{DRONE_COMMIT}
+      build_args :
+        - BASE_IMAGE=docker-registry.c2a2.com/jdk:openjdk-19-slim
+        - BUILD_VERSION=${symbol_dollar}{DRONE_COMMIT}
       tags :
         - ${symbol_dollar}{DRONE_TAG}
         - "latest"
