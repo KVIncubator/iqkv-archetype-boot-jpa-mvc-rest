@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.ujar.archetype</groupId>
+    <groupId>org.ujar.build</groupId>
     <artifactId>archetype-boot-jpa-restful</artifactId>
     <version>23.0.0-SNAPSHOT</version>
     <packaging>maven-archetype</packaging>
@@ -31,7 +31,7 @@
 
     <parent>
         <groupId>org.ujar.boot</groupId>
-        <artifactId>ujar-boot-parent-pom</artifactId>
+        <artifactId>boot-parent-pom</artifactId>
         <version>23.0.0-SNAPSHOT</version>
         <relativePath/>
     </parent>
