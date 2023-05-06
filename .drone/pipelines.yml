@@ -15,28 +15,32 @@ volumes :
 steps :
 
   - name : code-coverage-gate
-    image : docker-registry.c2a2.com/svc-builder:openjdk-19-slim
+    image : docker-registry.continuousdelivery.store/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
     pull : if-not-exists
     volumes :
       - name : m2cache
         path : /root/.m2
     environment :
+      MAVEN_OPTS : --add-opens java.base/java.lang=ALL-UNNAMED
       DEPLOYER_USERNAME :
         from_secret : DEPLOYER_USERNAME
       DEPLOYER_PASSWORD :
         from_secret : DEPLOYER_PASSWORD
     commands :
+      - mvn -version
+      - mvn dependency:resolve -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD
       - mvn clean verify -Dstyle.color=always -Dmaven.javadoc.skip=true -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD
 
   - name : static-analysis-gate
     depends_on :
       - code-coverage-gate
-    image : docker-registry.c2a2.com/svc-builder:openjdk-19-slim
+    image : docker-registry.continuousdelivery.store/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
     pull : if-not-exists
     volumes :
       - name : m2cache
         path : /root/.m2
     environment :
+      MAVEN_OPTS : --add-opens java.base/java.lang=ALL-UNNAMED
       DEPLOYER_USERNAME :
         from_secret : DEPLOYER_USERNAME
       DEPLOYER_PASSWORD :
@@ -77,17 +81,18 @@ volumes :
 
 steps :
   - name : publish-snapshot-jar
-    image : docker-registry.c2a2.com/svc-builder:openjdk-19-slim
+    image : docker-registry.continuousdelivery.store/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
     volumes :
       - name : m2cache
         path : /root/.m2
     environment :
+      MAVEN_OPTS : --add-opens java.base/java.lang=ALL-UNNAMED
       DEPLOYER_USERNAME :
         from_secret : DEPLOYER_USERNAME
       DEPLOYER_PASSWORD :
         from_secret : DEPLOYER_PASSWORD
     commands :
-      - mvn deploy -Dstyle.color=always -DskipTests -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD -DaltDeploymentRepository=appfactory-snapshots-repository::https://nexus.c2a2.com/repository/maven-snapshots
+      - mvn deploy -Dstyle.color=always -DskipTests -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD -DaltDeploymentRepository=manufacturing-snapshots-repository::https://nexus.continuousdelivery.store/repository/maven-snapshots
     when :
       branch :
         include :
@@ -96,18 +101,19 @@ steps :
           - "*.*.x"
 
   - name : publish-release-jar
-    image : docker-registry.c2a2.com/svc-builder:openjdk-19-slim
+    image : docker-registry.continuousdelivery.store/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
     pull : if-not-exists
     volumes :
       - name : m2cache
         path : /root/.m2
     environment :
+      MAVEN_OPTS : --add-opens java.base/java.lang=ALL-UNNAMED
       DEPLOYER_USERNAME :
         from_secret : DEPLOYER_USERNAME
       DEPLOYER_PASSWORD :
         from_secret : DEPLOYER_PASSWORD
     commands :
-      - mvn deploy -Dstyle.color=always -DskipTests -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD -DaltDeploymentRepository=appfactory-releases-repository::https://nexus.c2a2.com/repository/maven-releases
+      - mvn deploy -Dstyle.color=always -DskipTests -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD -DaltDeploymentRepository=manufacturing-releases-repository::https://nexus.continuousdelivery.store/repository/maven-releases
     when :
       ref :
         - "refs/tags/*"
@@ -146,7 +152,7 @@ volumes :
 steps :
   - name : create-release-tag
     failure : ignore
-    image : docker-registry.c2a2.com/svc-builder:openjdk-19-slim
+    image : docker-registry.continuousdelivery.store/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
     pull : if-not-exists
     volumes :
       - name : m2cache

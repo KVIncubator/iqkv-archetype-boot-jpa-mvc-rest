@@ -1,5 +1,5 @@
 {
-    "name": "archetype-boot-jpa-restful",
+    "name": "build-archetype-boot-jpa-restful",
     "version": "23.0.0",
     "description": "Provide an optional Git commit hooks.",
     "private": true,

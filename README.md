@@ -4,19 +4,19 @@ Spring Boot REST API Application Archetype is a Maven archetype for a Spring Boo
 
 Make sure you have correct tooling:
 
-- Java 19 or later
+- Java 17 or later
 - Maven 3.6.3 or later
 - Make sure `GIT_HOME`, `MVN_HOME` and `JAVA_HOME` are set, and they are in your `PATH` variable.
 
 Run the following to build a project from the archetype:
 
 ```
-git clone https://github.com/ujar-org/archetype-boot-jpa-restful
-cd archetype-boot-jpa-restful
+git clone https://github.com/ujar-org/build-archetype-boot-jpa-restful
+cd build-archetype-boot-jpa-restful
 ./mvnw clean package install
 mkdir generated-apps
 cd generated-apps
-mvn archetype:generate -DarchetypeGroupId=org.ujar.archetype -DarchetypeArtifactId=archetype-boot-jpa-restful -DarchetypeVersion=23.0.0-SNAPSHOT
+mvn archetype:generate -DarchetypeGroupId=org.ujar.build -DarchetypeArtifactId=build-archetype-boot-jpa-restful -DarchetypeVersion=23.0.0-SNAPSHOT
 ```
 
 #### Example:
@@ -24,7 +24,7 @@ mvn archetype:generate -DarchetypeGroupId=org.ujar.archetype -DarchetypeArtifact
 ```
 [INFO] --- maven-archetype-plugin:3.2.1:generate (default-cli) @ standalone-pom ---
 [INFO] Generating project in Interactive mode
-[INFO] Archetype repository not defined. Using the one from [org.ujar.archetype:archetype-boot-jpa-restful:23.0.0-SNAPSHOT] found in catalog local
+[INFO] Archetype repository not defined. Using the one from [org.ujar.build:archetype-boot-jpa-restful:23.0.0-SNAPSHOT] found in catalog local
 Define value for property 'groupId': org.ujar
 Define value for property 'artifactId': fruit-packaging-service
 [INFO] Using property: version = 1.0.0-SNAPSHOT

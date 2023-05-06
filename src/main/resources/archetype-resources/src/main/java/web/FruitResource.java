@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.ujar.boot.restful.web.ErrorResponse;
+import org.ujar.boot.restful.web.ApiError;
 import org.ujar.boot.restful.web.PaginationRequest;
 import ${package}.entity.Fruit;
 import ${package}.repository.FruitRepository;
@@ -47,10 +47,10 @@ class FruitResource {
                        description = "Success"),
           @ApiResponse(responseCode = "500",
                        description = "Internal error",
-                       content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                       content = @Content(schema = @Schema(implementation = ApiError.class))),
           @ApiResponse(responseCode = "400",
                        description = "Bad request",
-                       content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                       content = @Content(schema = @Schema(implementation = ApiError.class))),
       })
   ResponseEntity<Fruit> create(@RequestBody final FruitDto request) {
     final var fruit = new Fruit(null, request.name());
@@ -65,13 +65,13 @@ class FruitResource {
                        description = "Success"),
           @ApiResponse(responseCode = "500",
                        description = "Internal error",
-                       content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                       content = @Content(schema = @Schema(implementation = ApiError.class))),
           @ApiResponse(responseCode = "400",
                        description = "Bad request",
-                       content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                       content = @Content(schema = @Schema(implementation = ApiError.class))),
           @ApiResponse(responseCode = "404",
                        description = "Not found",
-                       content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                       content = @Content(schema = @Schema(implementation = ApiError.class)))
       })
   ResponseEntity<Fruit> findById(@PathVariable final Long id) {
     return ResponseEntity.of(fruitRepository.findById(id));
@@ -85,10 +85,10 @@ class FruitResource {
                        description = "Success"),
           @ApiResponse(responseCode = "500",
                        description = "Internal error",
-                       content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                       content = @Content(schema = @Schema(implementation = ApiError.class))),
           @ApiResponse(responseCode = "400",
                        description = "Bad request",
-                       content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                       content = @Content(schema = @Schema(implementation = ApiError.class))),
       })
   ResponseEntity<Page<Fruit>> findAll(@ParameterObject @Valid final PaginationRequest request) {
     final var pageRequest = PageRequest.of(request.getPage(), request.getSize());
@@ -103,10 +103,10 @@ class FruitResource {
                        description = "Success"),
           @ApiResponse(responseCode = "500",
                        description = "Internal error",
-                       content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                       content = @Content(schema = @Schema(implementation = ApiError.class))),
           @ApiResponse(responseCode = "400",
                        description = "Bad request",
-                       content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                       content = @Content(schema = @Schema(implementation = ApiError.class))),
       })
   ResponseEntity<Fruit> update(@PathVariable final Long id, @RequestBody final FruitDto request) {
     final var fruit = new Fruit(id, request.name());
@@ -121,10 +121,10 @@ class FruitResource {
                        description = "Success"),
           @ApiResponse(responseCode = "500",
                        description = "Internal error",
-                       content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                       content = @Content(schema = @Schema(implementation = ApiError.class))),
           @ApiResponse(responseCode = "400",
                        description = "Bad request",
-                       content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                       content = @Content(schema = @Schema(implementation = ApiError.class))),
       })
   HttpStatus delete(@PathVariable final Long id) {
     fruitRepository.deleteById(id);

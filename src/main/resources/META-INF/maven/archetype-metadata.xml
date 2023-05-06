@@ -69,14 +69,6 @@
             </includes>
         </fileSet>
         <fileSet filtered="true" encoding="UTF-8">
-            <directory>docs</directory>
-            <includes>
-                <include>**/*.yml</include>
-                <include>**/*.json</include>
-                <include>**/*.md</include>
-            </includes>
-        </fileSet>
-        <fileSet filtered="true" encoding="UTF-8">
             <directory>.mvn/wrapper</directory>
             <includes>
                 <include>**/*.java</include>
@@ -90,13 +82,13 @@
             </includes>
         </fileSet>
         <fileSet filtered="true" encoding="UTF-8">
-            <directory>.drone/c2a2</directory>
+            <directory>.drone</directory>
             <includes>
                 <include>**/*.yml</include>
             </includes>
         </fileSet>
         <fileSet encoding="UTF-8">
-            <directory>.drone/c2a2</directory>
+            <directory>.drone</directory>
             <includes>
                 <include>**/Dockerfile</include>
             </includes>
@@ -106,6 +98,7 @@
             <includes>
                 <include>**/*.</include>
                 <include>**/*.md</include>
+                <include>**/*.yml</include>
             </includes>
         </fileSet>
         <fileSet encoding="UTF-8">
