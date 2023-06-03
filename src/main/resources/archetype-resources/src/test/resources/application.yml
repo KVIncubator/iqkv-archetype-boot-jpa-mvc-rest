@@ -3,7 +3,7 @@
 ujar :
   build :
     description : '${symbol_at}project.description${symbol_at}'
-    relative-path : ''
+    relative-path : '/'
     version : '${symbol_at}project.version${symbol_at}'
 
 spring :

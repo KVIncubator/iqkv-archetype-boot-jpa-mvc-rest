@@ -3,7 +3,7 @@
 ujar :
   build :
     description : '${symbol_at}project.description${symbol_at}'
-    relative-path : ${symbol_dollar}{SWAGGER_UI_RELATIVE_PATH:}
+    relative-path : ${symbol_dollar}{SERVER_SERVLET_CONTEXT_PATH:/}
     version : '${symbol_at}project.version${symbol_at}'
 
 git :
@@ -66,12 +66,17 @@ spring :
     timeout-per-shutdown-phase : ${symbol_dollar}{TIMEOUT_PER_SHUTDOWN:20s}
 
 logging :
+  pattern :
+    level : '%5p [${symbol_dollar}{spring.application.name:},%X{traceId:-},%X{spanId:-}]'
   level :
     ROOT : ${symbol_dollar}{LOGGING_LEVEL_ROOT:INFO}
 
 server :
   port : ${symbol_dollar}{SERVER_PORT:8080}
   shutdown : graceful
+  forward-headers-strategy : framework
+  tomcat:
+    redirect-context-root : false
 
 management :
   health :
@@ -82,13 +87,42 @@ management :
   info :
     env :
       enabled : true
+    java :
+      enabled : true
+    os :
+      enabled : true
   server :
+    port : ${symbol_dollar}{MANAGEMENT_SERVER_PORT:8080}
     add-application-context-header : true
+
+  metrics :
+    tags :
+      application : ${symbol_dollar}{spring.application.name}
+      profiles : ${symbol_dollar}{spring.profiles.active}
+    distribution :
+      percentiles-histogram :
+        http :
+          server :
+            requests : true
+  tracing :
+    sampling :
+      probability : 1.0
+    enabled : true
+  prometheus :
+    metrics :
+      export :
+        step : 20s
+        enabled: true
+  zipkin :
+    tracing :
+      endpoint : ${symbol_dollar}{TEMPO_URL:http://localhost:9411/api/v2/spans}
+
+
   endpoints :
     enabled-by-default : false
     web :
       exposure :
-        include : health, prometheus, info, openapi, swagger-ui
+        include : health, metrics, prometheus, info, env, openapi, swagger-ui
   endpoint :
     health :
       enabled : true
@@ -97,11 +131,11 @@ management :
         enabled : true
     info :
       enabled : true
+    env :
+      enabled : true
+      show-values : always
     prometheus :
       enabled : true
 
 springdoc :
   show-actuator : false
-  swagger-ui :
-    config-url : ${symbol_dollar}{SWAGGER_UI_RELATIVE_PATH:/}v3/api-docs/swagger-config
-    url : ${symbol_dollar}{SWAGGER_UI_RELATIVE_PATH:/}v3/api-docs
