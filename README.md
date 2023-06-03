@@ -16,7 +16,7 @@ cd build-archetype-boot-jpa-restful
 ./mvnw clean package install
 mkdir generated-apps
 cd generated-apps
-mvn archetype:generate -DarchetypeGroupId=org.ujar.build -DarchetypeArtifactId=build-archetype-boot-jpa-restful -DarchetypeVersion=23.0.0-SNAPSHOT
+mvn archetype:generate -DarchetypeGroupId=org.ujar.build -DarchetypeArtifactId=archetype-boot-jpa-restful -DarchetypeVersion=23.0.0-SNAPSHOT
 ```
 
 #### Example:

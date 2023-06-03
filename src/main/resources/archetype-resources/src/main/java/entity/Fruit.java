@@ -44,11 +44,19 @@ public class Fruit {
   @Column(length = 120, unique = true)
   private String name;
 
+  private boolean available;
+
+  public Fruit(String name, boolean available) {
+    this.name = name;
+    this.available = available;
+  }
+
   @Override
   public String toString() {
     return "Fruit{" +
            "id=" + id +
-           ", name='" + name + '${symbol_escape}'' +
+           ", name='" + name + '\'' +
+           ", available=" + available +
            '}';
   }
 }

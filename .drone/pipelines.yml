@@ -15,7 +15,7 @@ volumes :
 steps :
 
   - name : code-coverage-gate
-    image : docker-registry.continuousdelivery.store/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
+    image : know-how.store/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
     pull : if-not-exists
     volumes :
       - name : m2cache
@@ -34,7 +34,7 @@ steps :
   - name : static-analysis-gate
     depends_on :
       - code-coverage-gate
-    image : docker-registry.continuousdelivery.store/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
+    image : know-how.store/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
     pull : if-not-exists
     volumes :
       - name : m2cache
@@ -50,10 +50,10 @@ steps :
       SONAR_TOKEN :
         from_secret : SONAR_TOKEN
     commands :
-      - mvn org.apache.maven.plugins:maven-dependency-plugin:3.3.0:copy-dependencies -Dmdep.prependGroupId=true -Dstyle.color=always -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD
+      - mvn org.apache.maven.plugins:maven-dependency-plugin:3.5.0:copy-dependencies -Dmdep.prependGroupId=true -Dstyle.color=always -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD
       - mvn sonar:sonar '-Dsonar.java.libraries=target/dependency/*.jar' '-Dsonar.java.test.libraries=target/classes,target/dependency/*.jar' -Dsonar.qualitygate.wait=true -Dsonar.qualitygate.timeout=300 -Dsonar.host.url=$SONAR_HOST -Dsonar.login=$SONAR_TOKEN -Dsonar.projectKey=${DRONE_REPO_OWNER}:${DRONE_REPO_NAME} -Dsonar.projectName=${DRONE_REPO_OWNER}:${DRONE_REPO_NAME} -Dstyle.color=always -Dmaven.javadoc.skip=true --batch-mode -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD
       - mvn pmd:check --batch-mode -Dstyle.color=always -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD
-      - mvn com.github.spotbugs:spotbugs-maven-plugin:4.7.3.0:check -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD  -Dspotbugs.xmlOutput=true -Dspotbugs.failOnError=true -Dspotbugs.excludeFilterFile=../spotbugs-exclude.xml -Dspotbugs.includeTests=true -Dstyle.color=always
+      - mvn com.github.spotbugs:spotbugs-maven-plugin:4.7.3.4:check -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD  -Dspotbugs.xmlOutput=true -Dspotbugs.failOnError=true -Dspotbugs.excludeFilterFile=../spotbugs-exclude.xml -Dspotbugs.includeTests=true -Dstyle.color=always
 
 ---
 
@@ -81,7 +81,7 @@ volumes :
 
 steps :
   - name : publish-snapshot-jar
-    image : docker-registry.continuousdelivery.store/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
+    image : know-how.store/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
     volumes :
       - name : m2cache
         path : /root/.m2
@@ -92,7 +92,7 @@ steps :
       DEPLOYER_PASSWORD :
         from_secret : DEPLOYER_PASSWORD
     commands :
-      - mvn deploy -Dstyle.color=always -DskipTests -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD -DaltDeploymentRepository=manufacturing-snapshots-repository::https://nexus.continuousdelivery.store/repository/maven-snapshots
+      - mvn deploy -Dstyle.color=always -DskipTests -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD -DaltDeploymentRepository=kh-contrib-snapshots-repo::https://know-how.nexus/repository/maven-snapshots
     when :
       branch :
         include :
@@ -101,7 +101,7 @@ steps :
           - "*.*.x"
 
   - name : publish-release-jar
-    image : docker-registry.continuousdelivery.store/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
+    image : know-how.store/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
     pull : if-not-exists
     volumes :
       - name : m2cache
@@ -113,7 +113,7 @@ steps :
       DEPLOYER_PASSWORD :
         from_secret : DEPLOYER_PASSWORD
     commands :
-      - mvn deploy -Dstyle.color=always -DskipTests -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD -DaltDeploymentRepository=manufacturing-releases-repository::https://nexus.continuousdelivery.store/repository/maven-releases
+      - mvn deploy -Dstyle.color=always -DskipTests -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD -DaltDeploymentRepository=kh-contrib-releases-repo::https://know-how.nexus/repository/maven-releases
     when :
       ref :
         - "refs/tags/*"
@@ -152,7 +152,7 @@ volumes :
 steps :
   - name : create-release-tag
     failure : ignore
-    image : docker-registry.continuousdelivery.store/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
+    image : know-how.store/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
     pull : if-not-exists
     volumes :
       - name : m2cache

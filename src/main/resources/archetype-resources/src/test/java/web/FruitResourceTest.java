@@ -3,210 +3,177 @@
 #set( $symbol_escape = '\' )
 package ${package}.web;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
-import com.google.gson.Gson;
-import lombok.SneakyThrows;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import ${package}.entity.Fruit;
+import ${package}.repository.FruitRepository;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-record FruitResourceTest(@Autowired MockMvc mvc) {
+@WebMvcTest(value = FruitResource.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
+class FruitResourceTest {
+  @MockBean
+  private FruitRepository fruitRepository;
 
-  @Test
-  @SneakyThrows
-  void shouldCreateFruit() {
-    final var fruit = new Fruit();
-    fruit.setName("Mango");
+  private final MockMvc mockMvc;
 
-    var responseBody = createNewEntity(fruit);
-    assertEntityEquals(fruit, responseBody);
-    deleteEntity(responseBody.getId());
+  private final ObjectMapper objectMapper;
 
-    responseBody = createNewEntity(fruit);
-    assertEntityEquals(fruit, responseBody);
-    deleteEntity(responseBody.getId());
+  @Autowired
+  public FruitResourceTest(MockMvc mockMvc, ObjectMapper objectMapper) {
+    this.mockMvc = mockMvc;
+    this.objectMapper = objectMapper;
   }
 
   @Test
-  @SneakyThrows
-  void shouldFindFruitById() {
-    final var gson = new Gson();
-    final var fruit = new Fruit();
-    fruit.setName("Kiwi");
+  void shouldCreateFruit() throws Exception {
+    Fruit fruit = new Fruit(1L, "Banana", true);
 
-    var responseBody = createNewEntity(fruit);
-
-    MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/api/v1/fruits/" + responseBody.getId())
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andReturn();
-    responseBody = gson.fromJson(result.getResponse().getContentAsString(), Fruit.class);
-
-    assertEntityEquals(fruit, responseBody);
-    deleteEntity(responseBody.getId());
-  }
-
-  @Test
-  @SneakyThrows
-  void shouldFindAllFruits() {
-    final var fruit = new Fruit();
-
-    final var numberOfRecords = 3;
-    final var fruits = new String[] {"Apple", "Banana", "Orange"};
-    final var created = new ArrayList<Fruit>();
-    for (int i = 0; i < numberOfRecords; i++) {
-      fruit.setName(fruits[i]);
-      created.add(createNewEntity(fruit));
-    }
-
-    mvc.perform(MockMvcRequestBuilders.get("/api/v1/fruits")
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().json(
-            """
-                {
-                   "content":[
-                      {
-                         "id":1,
-                         "name":"Apple"
-                      },
-                      {
-                         "id":2,
-                         "name":"Banana"
-                      },
-                      {
-                         "id":3,
-                         "name":"Orange"
-                      }
-                   ],
-                   "pageable":{
-                      "sort":{
-                         "empty":true,
-                         "sorted":false,
-                         "unsorted":true
-                      },
-                      "offset":0,
-                      "pageNumber":0,
-                      "pageSize":10,
-                      "paged":true,
-                      "unpaged":false
-                   },
-                   "last":true,
-                   "totalPages":1,
-                   "totalElements":3,
-                   "size":10,
-                   "number":0,
-                   "sort":{
-                      "empty":true,
-                      "sorted":false,
-                      "unsorted":true
-                   },
-                   "first":true,
-                   "numberOfElements":3,
-                   "empty":false
-                }
-                """
-        ));
-    for (Fruit singleEntity : created) {
-      deleteEntity(singleEntity.getId());
-    }
-  }
-
-  @Test
-  @SneakyThrows
-  void shouldUpdateFruit() {
-    final var fruit = new Fruit();
-    fruit.setName("Lemon");
-
-    var responseBody = createNewEntity(fruit);
-
-    responseBody = getEntityById(responseBody.getId(), status().isOk());
-    responseBody.setName("Avocado");
-    responseBody = updateEntity(responseBody);
-    fruit.setName("Avocado");
-
-    assertEntityEquals(fruit, responseBody);
-    deleteEntity(responseBody.getId());
-  }
-
-  @Test
-  void shouldDeleteFruit() {
-    final var fruit = new Fruit();
-    fruit.setName("Kiwi");
-
-    var responseBody = createNewEntity(fruit);
-
-    deleteEntity(responseBody.getId());
-    getEntityById(responseBody.getId(), status().isNotFound());
-  }
-
-  @SneakyThrows
-  private Fruit createNewEntity(final Fruit fruit) {
-    final var gson = new Gson();
-
-    MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/api/v1/fruits")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(gson.toJson(fruit))
-            .accept(MediaType.APPLICATION_JSON))
+    mockMvc.perform(post("/api/v1/fruits").contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(fruit)))
         .andExpect(status().isCreated())
-        .andReturn();
-
-    return gson.fromJson(result.getResponse().getContentAsString(), Fruit.class);
+        .andDo(print());
   }
 
-  @SneakyThrows
-  private Fruit updateEntity(final Fruit fruit) {
-    final var gson = new Gson();
-    final var id = fruit.getId();
-    MvcResult result = mvc.perform(MockMvcRequestBuilders.put("/api/v1/fruits/" + id)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(gson.toJson(fruit))
-            .accept(MediaType.APPLICATION_JSON))
+  @Test
+  void shouldReturnFruit() throws Exception {
+    long id = 1L;
+    Fruit fruit = new Fruit(id, "Orange", true);
+
+    when(fruitRepository.findById(id)).thenReturn(Optional.of(fruit));
+    mockMvc.perform(get("/api/v1/fruits/{id}", id)).andExpect(status().isOk())
+        .andExpect(jsonPath("${symbol_dollar}.id").value(id))
+        .andExpect(jsonPath("${symbol_dollar}.name").value(fruit.getName()))
+        .andExpect(jsonPath("${symbol_dollar}.available").value(fruit.isAvailable()))
+        .andDo(print());
+  }
+
+  @Test
+  void shouldReturnNotFoundFruit() throws Exception {
+    long id = 1L;
+
+    when(fruitRepository.findById(id)).thenReturn(Optional.empty());
+    mockMvc.perform(get("/api/v1/fruits/{id}", id))
+        .andExpect(status().isNotFound())
+        .andDo(print());
+  }
+
+  @Test
+  void shouldReturnListOfFruits() throws Exception {
+    List<Fruit> fruits = new ArrayList<>(
+        Arrays.asList(new Fruit(1L, "Banana 1", true),
+            new Fruit(2L, "Banana 2", true),
+            new Fruit(3L, "Banana 3", true)));
+
+    when(fruitRepository.findAll()).thenReturn(fruits);
+    mockMvc.perform(get("/api/v1/fruits"))
         .andExpect(status().isOk())
-        .andReturn();
-
-    return gson.fromJson(result.getResponse().getContentAsString(), Fruit.class);
+        .andExpect(jsonPath("${symbol_dollar}.size()").value(fruits.size()))
+        .andDo(print());
   }
 
-  @SneakyThrows
-  private Fruit getEntityById(final Long id, final ResultMatcher matcher) {
-    final var gson = new Gson();
+  @Test
+  void shouldReturnListOfFruitsWithFilter() throws Exception {
+    List<Fruit> fruits = new ArrayList<>(
+        Arrays.asList(new Fruit(1L, "Banana example", true),
+            new Fruit(3L, "Kiwi example", true)));
 
-    final var result = mvc.perform(MockMvcRequestBuilders.get("/api/v1/fruits/" + id)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(matcher)
-        .andReturn();
+    final String name = "example";
+    final MultiValueMap<String, String> paramsMap = new LinkedMultiValueMap<>();
+    paramsMap.add("name", name);
 
-    return gson.fromJson(result.getResponse().getContentAsString(), Fruit.class);
-  }
-
-  @SneakyThrows
-  private void deleteEntity(final Long id) {
-    mvc.perform(MockMvcRequestBuilders.delete("/api/v1/fruits/" + id)
-            .accept(MediaType.APPLICATION_JSON))
+    when(fruitRepository.findByNameContaining(name)).thenReturn(fruits);
+    mockMvc.perform(get("/api/v1/fruits").params(paramsMap))
         .andExpect(status().isOk())
-        .andReturn();
+        .andExpect(jsonPath("${symbol_dollar}.size()").value(fruits.size()))
+        .andDo(print());
   }
 
-  private void assertEntityEquals(final Fruit fruit, final Fruit responseBody) {
-    assertNotNull(responseBody);
-    assertNotNull(responseBody.getId());
-    assertEquals(responseBody.getName(), fruit.getName());
+  @Test
+  void shouldReturnNoContentWhenFilter() throws Exception {
+    final String name = "Kiwi";
+    final MultiValueMap<String, String> paramsMap = new LinkedMultiValueMap<>();
+    paramsMap.add("name", name);
+
+    List<Fruit> fruits = Collections.emptyList();
+
+    when(fruitRepository.findByName(name)).thenReturn(fruits);
+    mockMvc.perform(get("/api/v1/fruits").params(paramsMap))
+        .andExpect(status().isNoContent())
+        .andDo(print());
   }
 
+  @Test
+  void shouldUpdateFruit() throws Exception {
+    long id = 1L;
+
+    final Fruit fruit = new Fruit(id, "Banana", false);
+    final Fruit updatedFruit = new Fruit(id, "Orange", true);
+
+    when(fruitRepository.findById(id)).thenReturn(Optional.of(fruit));
+    when(fruitRepository.save(any(Fruit.class))).thenReturn(updatedFruit);
+
+    mockMvc.perform(put("/api/v1/fruits/{id}", id).contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(updatedFruit)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("${symbol_dollar}.name").value(updatedFruit.getName()))
+        .andExpect(jsonPath("${symbol_dollar}.available").value(updatedFruit.isAvailable()))
+        .andDo(print());
+  }
+
+  @Test
+  void shouldReturnNotFoundUpdateFruit() throws Exception {
+    long id = 1L;
+
+    final Fruit updatedFruit = new Fruit(id, "Orange", true);
+
+    when(fruitRepository.findById(id)).thenReturn(Optional.empty());
+    when(fruitRepository.save(any(Fruit.class))).thenReturn(updatedFruit);
+
+    mockMvc.perform(put("/api/v1/fruits/{id}", id).contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(updatedFruit)))
+        .andExpect(status().isNotFound())
+        .andDo(print());
+  }
+
+  @Test
+  void shouldDeleteFruit() throws Exception {
+    long id = 1L;
+
+    doNothing().when(fruitRepository).deleteById(id);
+    mockMvc.perform(delete("/api/v1/fruits/{id}", id))
+        .andExpect(status().isNoContent())
+        .andDo(print());
+  }
+
+  @Test
+  void shouldDeleteAllFruits() throws Exception {
+    doNothing().when(fruitRepository).deleteAll();
+    mockMvc.perform(delete("/api/v1/fruits"))
+        .andExpect(status().isNoContent())
+        .andDo(print());
+  }
 }

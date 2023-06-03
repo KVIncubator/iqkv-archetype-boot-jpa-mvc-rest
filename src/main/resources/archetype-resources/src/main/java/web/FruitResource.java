@@ -3,7 +3,9 @@
 #set( $symbol_escape = '\' )
 package ${package}.web;
 
-import jakarta.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,9 +13,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -24,16 +23,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.ujar.boot.restful.web.ApiError;
-import org.ujar.boot.restful.web.PaginationRequest;
 import ${package}.entity.Fruit;
 import ${package}.repository.FruitRepository;
 
 @RestController
-@Tag(name = "Fruit Resource", description = "API endpoints for managing fruit entity.")
-@RequestMapping("/api/v1/fruits")
+@Tag(name = "Fruits", description = "API endpoints for managing fruit entity.")
 @Validated
+@RequestMapping("/api/v1/fruits")
 @RequiredArgsConstructor
 class FruitResource {
 
@@ -44,7 +43,7 @@ class FruitResource {
       description = "Create a new fruit.",
       responses = {
           @ApiResponse(responseCode = "201",
-                       description = "Success"),
+                       description = "Created"),
           @ApiResponse(responseCode = "500",
                        description = "Internal error",
                        content = @Content(schema = @Schema(implementation = ApiError.class))),
@@ -52,9 +51,9 @@ class FruitResource {
                        description = "Bad request",
                        content = @Content(schema = @Schema(implementation = ApiError.class))),
       })
-  ResponseEntity<Fruit> create(@RequestBody final FruitDto request) {
-    final var fruit = new Fruit(null, request.name());
-    return new ResponseEntity<>(fruitRepository.save(fruit), HttpStatus.CREATED);
+  ResponseEntity<Fruit> create(@RequestBody FruitRequest fruitRequest) {
+    Fruit fruit = fruitRepository.save(new Fruit(fruitRequest.name(), fruitRequest.available()));
+    return new ResponseEntity<>(fruit, HttpStatus.CREATED);
   }
 
   @GetMapping("/{id}")
@@ -73,8 +72,9 @@ class FruitResource {
                        description = "Not found",
                        content = @Content(schema = @Schema(implementation = ApiError.class)))
       })
-  ResponseEntity<Fruit> findById(@PathVariable final Long id) {
-    return ResponseEntity.of(fruitRepository.findById(id));
+  ResponseEntity<Fruit> findById(@PathVariable("id") long id) {
+    Optional<Fruit> fruitData = fruitRepository.findById(id);
+    return fruitData.map(fruit -> new ResponseEntity<>(fruit, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
   @GetMapping
@@ -90,9 +90,20 @@ class FruitResource {
                        description = "Bad request",
                        content = @Content(schema = @Schema(implementation = ApiError.class))),
       })
-  ResponseEntity<Page<Fruit>> findAll(@ParameterObject @Valid final PaginationRequest request) {
-    final var pageRequest = PageRequest.of(request.getPage(), request.getSize());
-    return new ResponseEntity<>(fruitRepository.findAll(pageRequest), HttpStatus.OK);
+  ResponseEntity<List<Fruit>> findAll(@RequestParam(required = false) String name) {
+    List<Fruit> fruits = new ArrayList<>();
+
+    if (name == null) {
+      fruits.addAll(fruitRepository.findAll());
+    } else {
+      fruits.addAll(fruitRepository.findByNameContaining(name));
+    }
+
+    if (fruits.isEmpty()) {
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    return new ResponseEntity<>(fruits, HttpStatus.OK);
   }
 
   @PutMapping("/{id}")
@@ -108,14 +119,47 @@ class FruitResource {
                        description = "Bad request",
                        content = @Content(schema = @Schema(implementation = ApiError.class))),
       })
-  ResponseEntity<Fruit> update(@PathVariable final Long id, @RequestBody final FruitDto request) {
-    final var fruit = new Fruit(id, request.name());
-    return new ResponseEntity<>(fruitRepository.save(fruit), HttpStatus.OK);
+  ResponseEntity<Fruit> update(@PathVariable("id") final long id, @RequestBody final FruitRequest fruitRequest) {
+    Optional<Fruit> fruitData = fruitRepository.findById(id);
+
+    if (fruitData.isPresent()) {
+      Fruit fruit = fruitData.get();
+      fruit.setName(fruitRequest.name());
+      fruit.setAvailable(fruitRequest.available());
+      return new ResponseEntity<>(fruitRepository.save(fruit), HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
   }
 
   @DeleteMapping("/{id}")
+  ResponseEntity<HttpStatus> delete(@PathVariable("id") final long id) {
+    fruitRepository.deleteById(id);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+  }
+
+  @DeleteMapping
   @Operation(
-      description = "Delete fruit.",
+      description = "Delete all fruits.",
+      responses = {
+          @ApiResponse(responseCode = "204",
+                       description = "No Content"),
+          @ApiResponse(responseCode = "500",
+                       description = "Internal error",
+                       content = @Content(schema = @Schema(implementation = ApiError.class))),
+          @ApiResponse(responseCode = "400",
+                       description = "Bad request",
+                       content = @Content(schema = @Schema(implementation = ApiError.class))),
+      })
+  ResponseEntity<HttpStatus> deleteAll() {
+    fruitRepository.deleteAll();
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  @GetMapping("/available")
+  @Operation(
+      description = "Get all available profiles.",
       responses = {
           @ApiResponse(responseCode = "200",
                        description = "Success"),
@@ -126,11 +170,15 @@ class FruitResource {
                        description = "Bad request",
                        content = @Content(schema = @Schema(implementation = ApiError.class))),
       })
-  HttpStatus delete(@PathVariable final Long id) {
-    fruitRepository.deleteById(id);
-    return HttpStatus.OK;
+  ResponseEntity<List<Fruit>> findByAvailable() {
+    List<Fruit> fruits = fruitRepository.findByAvailable(true);
+
+    if (fruits.isEmpty()) {
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+    return new ResponseEntity<>(fruits, HttpStatus.OK);
   }
 
-  record FruitDto(String name) {
+  record FruitRequest(String name, boolean available) {
   }
 }

@@ -15,6 +15,7 @@
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
+            <column name="available" type="boolean" defaultValueBoolean="false"/>
             <column name="name" type="varchar(120)">
                 <constraints unique="true" nullable="false" uniqueConstraintName="ux_fruit_name"/>
             </column>
