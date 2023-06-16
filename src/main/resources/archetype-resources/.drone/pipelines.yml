@@ -55,6 +55,21 @@ steps :
       - mvn pmd:check --batch-mode -Dstyle.color=always -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
       - mvn com.github.spotbugs:spotbugs-maven-plugin:4.7.3.4:check -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD  -Dspotbugs.xmlOutput=true -Dspotbugs.failOnError=true -Dspotbugs.excludeFilterFile=../spotbugs-exclude.xml -Dspotbugs.includeTests=true -Dstyle.color=always
 
+  - name : notify-slack-on-failure
+    image : plugins/slack
+    settings :
+      webhook :
+        from_secret : SLACK_WEBHOOK
+      channel : dev
+      template : >
+        :red_circle: :thunder_cloud_and_rain: {{build.link}} ({{build.branch}}) by {{build.author}}
+    when :
+      status :
+        - failure
+    depends_on :
+      - code-coverage-gate
+      - static-analysis-gate
+
 ---
 
 kind : pipeline
@@ -140,16 +155,18 @@ steps :
       channel : dev
       template : >
         {{#success build.status}}
-         :large_green_circle: :package: *${DRONE_COMMIT_MESSAGE}*
+         :large_green_circle: :package: *${symbol_dollar}{DRONE_COMMIT_MESSAGE}*
          {{build.link}} ({{build.branch}}) by {{build.author}}
         {{else}}
-         :large_red_circle: :package: {{build.link}} ({{build.branch}}) by {{build.author}}
+         :red_circle: :package: {{build.link}} ({{build.branch}}) by {{build.author}}
         {{/success}}
     when :
       status :
         - failure
         - success
-
+    depends_on :
+      - publish-snapshot-jar
+      - publish-release-jar
 ---
 
 kind : pipeline
@@ -258,6 +275,25 @@ steps :
       - kubectl version --output=yaml
       - helm upgrade --install --atomic --wait --timeout 2m ${symbol_dollar}{DRONE_REPO_NAME} ./${symbol_dollar}{DRONE_REPO_NAME} --values ./${symbol_dollar}{DRONE_REPO_NAME}/${symbol_dollar}{DRONE_DEPLOY_TO}-values.yaml --set image.tag=${symbol_dollar}{DRONE_COMMIT} -n ${symbol_dollar}{DRONE_DEPLOY_TO}-env
 
+  - name : notify-slack
+    image : plugins/slack
+    settings :
+      webhook :
+        from_secret : SLACK_WEBHOOK
+      channel : dev
+      template : >
+        {{#success build.status}}
+         :large_green_circle: :ship: *${symbol_dollar}{DRONE_COMMIT_MESSAGE}*
+         {{build.link}} ({{build.branch}}) by {{build.author}}
+        {{else}}
+         :red_circle: :anchor: {{build.link}} ({{build.branch}}) by {{build.author}}
+        {{/success}}
+    when :
+      status :
+        - failure
+        - success
+    depends_on :
+      - deploy
 ---
 
 kind : pipeline
@@ -308,6 +344,25 @@ steps :
       - kubectl version --output=yaml
       - helm upgrade --install --atomic --wait --timeout 2m ${symbol_dollar}{DRONE_REPO_NAME} ./${symbol_dollar}{DRONE_REPO_NAME} --values ./${symbol_dollar}{DRONE_REPO_NAME}/${symbol_dollar}{DRONE_DEPLOY_TO}-values.yaml --set image.tag=${symbol_dollar}{DRONE_TAG} -n ${symbol_dollar}{DRONE_DEPLOY_TO}-env
 
+  - name : notify-slack
+    image : plugins/slack
+    settings :
+      webhook :
+        from_secret : SLACK_WEBHOOK
+      channel : dev
+      template : >
+        {{#success build.status}}
+         :large_green_circle: :ship: *${symbol_dollar}{DRONE_COMMIT_MESSAGE}*
+         {{build.link}} ({{build.branch}}) by {{build.author}}
+        {{else}}
+         :red_circle: :anchor: {{build.link}} ({{build.branch}}) by {{build.author}}
+        {{/success}}
+    when :
+      status :
+        - failure
+        - success
+    depends_on :
+      - deploy
 ---
 
 kind : pipeline
