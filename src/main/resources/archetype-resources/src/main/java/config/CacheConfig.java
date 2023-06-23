@@ -23,7 +23,7 @@ class CacheConfig {
 
   private final javax.cache.configuration.Configuration<Object, Object> jcacheConfiguration;
 
-  CacheConfig(CacheProperties cacheProperties) {
+  CacheConfig(final CacheProperties cacheProperties) {
     final var ehcacheProperties = cacheProperties.getEhcache();
     jcacheConfiguration =
         Eh107Configuration.fromEhcacheCacheConfiguration(
@@ -41,7 +41,7 @@ class CacheConfig {
   }
 
   @Bean
-  HibernatePropertiesCustomizer hibernatePropertiesCustomizer(javax.cache.CacheManager cacheManager) {
+  HibernatePropertiesCustomizer hibernatePropertiesCustomizer(final javax.cache.CacheManager cacheManager) {
     return hibernateProperties -> hibernateProperties.put(ConfigSettings.CACHE_MANAGER, cacheManager);
   }
 
@@ -52,7 +52,7 @@ class CacheConfig {
     };
   }
 
-  private void createCache(javax.cache.CacheManager cm, String cacheName) {
+  private void createCache(final javax.cache.CacheManager cm, final String cacheName) {
     javax.cache.Cache<Object, Object> cache = cm.getCache(cacheName);
     if (cache != null) {
       cache.clear();
