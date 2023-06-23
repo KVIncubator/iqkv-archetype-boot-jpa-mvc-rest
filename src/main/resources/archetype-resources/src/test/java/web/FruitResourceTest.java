@@ -43,14 +43,14 @@ class FruitResourceTest {
   private final ObjectMapper objectMapper;
 
   @Autowired
-  public FruitResourceTest(MockMvc mockMvc, ObjectMapper objectMapper) {
+  public FruitResourceTest(final MockMvc mockMvc, final ObjectMapper objectMapper) {
     this.mockMvc = mockMvc;
     this.objectMapper = objectMapper;
   }
 
   @Test
   void shouldCreateFruit() throws Exception {
-    Fruit fruit = new Fruit(1L, "Banana", true);
+    final Fruit fruit = new Fruit(1L, "Banana", true);
 
     mockMvc.perform(post("/api/v1/fruits").contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(fruit)))
@@ -61,7 +61,7 @@ class FruitResourceTest {
   @Test
   void shouldReturnFruit() throws Exception {
     long id = 1L;
-    Fruit fruit = new Fruit(id, "Orange", true);
+    final Fruit fruit = new Fruit(id, "Orange", true);
 
     when(fruitRepository.findById(id)).thenReturn(Optional.of(fruit));
     mockMvc.perform(get("/api/v1/fruits/{id}", id)).andExpect(status().isOk())
@@ -73,7 +73,7 @@ class FruitResourceTest {
 
   @Test
   void shouldReturnNotFoundFruit() throws Exception {
-    long id = 1L;
+    final long id = 1L;
 
     when(fruitRepository.findById(id)).thenReturn(Optional.empty());
     mockMvc.perform(get("/api/v1/fruits/{id}", id))
@@ -83,7 +83,7 @@ class FruitResourceTest {
 
   @Test
   void shouldReturnListOfFruits() throws Exception {
-    List<Fruit> fruits = new ArrayList<>(
+    final List<Fruit> fruits = new ArrayList<>(
         Arrays.asList(new Fruit(1L, "Banana 1", true),
             new Fruit(2L, "Banana 2", true),
             new Fruit(3L, "Banana 3", true)));
@@ -97,7 +97,7 @@ class FruitResourceTest {
 
   @Test
   void shouldReturnListOfFruitsWithFilter() throws Exception {
-    List<Fruit> fruits = new ArrayList<>(
+    final List<Fruit> fruits = new ArrayList<>(
         Arrays.asList(new Fruit(1L, "Banana example", true),
             new Fruit(3L, "Kiwi example", true)));
 
@@ -118,7 +118,7 @@ class FruitResourceTest {
     final MultiValueMap<String, String> paramsMap = new LinkedMultiValueMap<>();
     paramsMap.add("name", name);
 
-    List<Fruit> fruits = Collections.emptyList();
+    final List<Fruit> fruits = Collections.emptyList();
 
     when(fruitRepository.findByName(name)).thenReturn(fruits);
     mockMvc.perform(get("/api/v1/fruits").params(paramsMap))
@@ -128,7 +128,7 @@ class FruitResourceTest {
 
   @Test
   void shouldUpdateFruit() throws Exception {
-    long id = 1L;
+    final long id = 1L;
 
     final Fruit fruit = new Fruit(id, "Banana", false);
     final Fruit updatedFruit = new Fruit(id, "Orange", true);
@@ -146,7 +146,7 @@ class FruitResourceTest {
 
   @Test
   void shouldReturnNotFoundUpdateFruit() throws Exception {
-    long id = 1L;
+    final long id = 1L;
 
     final Fruit updatedFruit = new Fruit(id, "Orange", true);
 
@@ -161,7 +161,7 @@ class FruitResourceTest {
 
   @Test
   void shouldDeleteFruit() throws Exception {
-    long id = 1L;
+    final long id = 1L;
 
     doNothing().when(fruitRepository).deleteById(id);
     mockMvc.perform(delete("/api/v1/fruits/{id}", id))

@@ -51,8 +51,8 @@ class FruitResource {
                        description = "Bad request",
                        content = @Content(schema = @Schema(implementation = ApiError.class))),
       })
-  ResponseEntity<Fruit> create(@RequestBody FruitRequest fruitRequest) {
-    Fruit fruit = fruitRepository.save(new Fruit(fruitRequest.name(), fruitRequest.available()));
+  ResponseEntity<Fruit> create(@RequestBody final FruitRequest fruitRequest) {
+    final Fruit fruit = fruitRepository.save(new Fruit(fruitRequest.name(), fruitRequest.available()));
     return new ResponseEntity<>(fruit, HttpStatus.CREATED);
   }
 
@@ -72,7 +72,7 @@ class FruitResource {
                        description = "Not found",
                        content = @Content(schema = @Schema(implementation = ApiError.class)))
       })
-  ResponseEntity<Fruit> findById(@PathVariable("id") long id) {
+  ResponseEntity<Fruit> findById(@PathVariable("id") final long id) {
     Optional<Fruit> fruitData = fruitRepository.findById(id);
     return fruitData.map(fruit -> new ResponseEntity<>(fruit, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
@@ -90,8 +90,8 @@ class FruitResource {
                        description = "Bad request",
                        content = @Content(schema = @Schema(implementation = ApiError.class))),
       })
-  ResponseEntity<List<Fruit>> findAll(@RequestParam(required = false) String name) {
-    List<Fruit> fruits = new ArrayList<>();
+  ResponseEntity<List<Fruit>> findAll(@RequestParam(required = false) final String name) {
+    final List<Fruit> fruits = new ArrayList<>();
 
     if (name == null) {
       fruits.addAll(fruitRepository.findAll());
@@ -123,7 +123,7 @@ class FruitResource {
     Optional<Fruit> fruitData = fruitRepository.findById(id);
 
     if (fruitData.isPresent()) {
-      Fruit fruit = fruitData.get();
+      final Fruit fruit = fruitData.get();
       fruit.setName(fruitRequest.name());
       fruit.setAvailable(fruitRequest.available());
       return new ResponseEntity<>(fruitRepository.save(fruit), HttpStatus.OK);
@@ -171,7 +171,7 @@ class FruitResource {
                        content = @Content(schema = @Schema(implementation = ApiError.class))),
       })
   ResponseEntity<List<Fruit>> findByAvailable() {
-    List<Fruit> fruits = fruitRepository.findByAvailable(true);
+    final List<Fruit> fruits = fruitRepository.findByAvailable(true);
 
     if (fruits.isEmpty()) {
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
