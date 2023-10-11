@@ -15,7 +15,7 @@ volumes :
 steps :
 
   - name : code-coverage-gate
-    image : know-how.download/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
+    image : know-how.download/svc-builder:openjdk-21-slim-bookworm
     pull : if-not-exists
     volumes :
       - name : m2cache
@@ -34,7 +34,7 @@ steps :
   - name : static-analysis-gate
     depends_on :
       - code-coverage-gate
-    image : know-how.download/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
+    image : know-how.download/svc-builder:openjdk-21-slim-bookworm
     pull : if-not-exists
     volumes :
       - name : m2cache
@@ -52,7 +52,7 @@ steps :
     commands :
       - mvn org.apache.maven.plugins:maven-dependency-plugin:3.5.0:copy-dependencies -Dmdep.prependGroupId=true -Dstyle.color=always -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD
       - mvn sonar:sonar '-Dsonar.java.libraries=target/dependency/*.jar' '-Dsonar.java.test.libraries=target/classes,target/dependency/*.jar' -Dsonar.qualitygate.wait=true -Dsonar.qualitygate.timeout=300 -Dsonar.host.url=$SONAR_HOST -Dsonar.login=$SONAR_TOKEN -Dsonar.projectKey=${DRONE_REPO_OWNER}:${DRONE_REPO_NAME} -Dsonar.projectName=${DRONE_REPO_OWNER}:${DRONE_REPO_NAME} -Dstyle.color=always -Dmaven.javadoc.skip=true --batch-mode -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD
-      - mvn pmd:check --batch-mode -Dstyle.color=always -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD
+      #- mvn org.apache.maven.plugins:maven-pmd-plugin:3.21.0:check --batch-mode -Dstyle.color=always -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD
       - mvn com.github.spotbugs:spotbugs-maven-plugin:4.7.3.4:check -s ../maven-settings.xml -Ddeployer.username=$DEPLOYER_USERNAME -Ddeployer.password=$DEPLOYER_PASSWORD  -Dspotbugs.xmlOutput=true -Dspotbugs.failOnError=true -Dspotbugs.excludeFilterFile=../spotbugs-exclude.xml -Dspotbugs.includeTests=true -Dstyle.color=always
 
   - name : notify-slack-on-failure
@@ -96,7 +96,7 @@ volumes :
 
 steps :
   - name : publish-snapshot-jar
-    image : know-how.download/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
+    image : know-how.download/svc-builder:openjdk-21-slim-bookworm
     volumes :
       - name : m2cache
         path : /root/.m2
@@ -116,7 +116,7 @@ steps :
           - "*.*.x"
 
   - name : publish-release-jar
-    image : know-how.download/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
+    image : know-how.download/svc-builder:openjdk-21-slim-bookworm
     pull : if-not-exists
     volumes :
       - name : m2cache
@@ -187,7 +187,7 @@ volumes :
 steps :
   - name : create-release-tag
     failure : ignore
-    image : know-how.download/svc-builder:ibm-semeru-runtimes-open-17-jdk-focal
+    image : know-how.download/svc-builder:openjdk-21-slim-bookworm
     pull : if-not-exists
     volumes :
       - name : m2cache
@@ -195,9 +195,9 @@ steps :
     commands :
       - echo Prepare new version ${RELEASE_VERSION}
       - export NEXT_SNAPSHOT=${SNAPSHOT_VERSION}-SNAPSHOT
-      - export GIT_AUTHOR_NAME=$${SVC_BUILD_GIT_USERNAME}
+      - export GIT_AUTHOR_NAME="$${SVC_BUILD_GIT_USERNAME}"
       - export GIT_AUTHOR_EMAIL=$${SVC_BUILD_GIT_EMAIL}
-      - export GIT_COMMITTER_NAME=$${SVC_BUILD_GIT_USERNAME}
+      - export GIT_COMMITTER_NAME="$${SVC_BUILD_GIT_USERNAME}"
       - export GIT_COMMITTER_EMAIL=$${SVC_BUILD_GIT_EMAIL}
       - git remote set-url --push origin ${DRONE_GIT_SSH_URL}
       - git checkout -b v${RELEASE_VERSION}

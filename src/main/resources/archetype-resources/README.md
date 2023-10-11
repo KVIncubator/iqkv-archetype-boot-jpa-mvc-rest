@@ -5,13 +5,13 @@ ${projectDescription}
 
 ${symbol_pound}${symbol_pound} Technology stack
 
-Java 17, Spring Boot, Spring Data, Postgres.
+java 21, Spring Boot, Spring Data, Postgres.
 
 ${symbol_pound}${symbol_pound} Prerequisites
 
 The following items should be installed in your system:
 
-* Java 17 or newer.
+* java 21 or newer.
 * git command line tool (https://help.github.com/articles/set-up-git)
 * Your preferred IDE (IDEA preferably)
 
