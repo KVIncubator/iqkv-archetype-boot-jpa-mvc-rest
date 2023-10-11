@@ -4,7 +4,7 @@ Spring Boot REST API Application Archetype is a Maven archetype for a Spring Boo
 
 Make sure you have correct tooling:
 
-- Java 17 or later
+- java 21 or later
 - Maven 3.6.3 or later
 - Make sure `GIT_HOME`, `MVN_HOME` and `JAVA_HOME` are set, and they are in your `PATH` variable.
 
