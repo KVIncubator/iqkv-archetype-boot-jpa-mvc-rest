@@ -11,7 +11,7 @@ Make sure you have correct tooling:
 Run the following to build a project from the archetype:
 
 ```
-git clone https://github.com/ujar-org/build-archetype-boot-jpa-restful
+git clone https://github.com/uJarOrg/build-archetype-boot-jpa-restful
 cd build-archetype-boot-jpa-restful
 ./mvnw clean package install
 mkdir generated-apps
