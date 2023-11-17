@@ -1,5 +1,5 @@
 {
-    "name": "build-archetype-boot-jpa-restful",
+    "name": "know-how-spring-boot-archetype-jpa-restful",
     "version": "23.0.0",
     "description": "Provide an optional Git commit hooks.",
     "private": true,

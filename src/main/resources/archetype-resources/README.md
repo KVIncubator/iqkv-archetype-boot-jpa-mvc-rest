@@ -28,7 +28,7 @@ This application is a [Spring Boot](https://spring.io/guides/gs/spring-boot) app
 using [Maven](https://spring.io/guides/gs/maven/). You can build a jar file and run it from the command line:
 
 ```
-git clone https://github.com/uJarOrg/${artifactId}.git
+git clone https://github.com/KnowHowSpringBoot/${artifactId}.git
 cd ${artifactId}
 ./mvnw package -DskipTests
 java -jar target/*.jar
@@ -47,7 +47,7 @@ ${symbol_pound}${symbol_pound}${symbol_pound} Working with Application in your I
 1) On the command line
 
 ```
-git clone https://github.com/uJarOrg/${artifactId}.git
+git clone https://github.com/KnowHowSpringBoot/${artifactId}.git
 ```
 
 2) Inside IDE
