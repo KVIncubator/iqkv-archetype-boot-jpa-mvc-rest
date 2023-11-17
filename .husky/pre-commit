@@ -2,7 +2,7 @@
 
 current_branch=$(git rev-parse --abbrev-ref HEAD)
 
-main_branch="(main|master|develop)"
+main_branch="(main|master|dev|develop)"
 if [[ $current_branch =~ $main_branch ]]; then
     echo -e "\033[1;31m[ERROR] Please don't commit directly to $current_branch.\033[0m";
     exit 1

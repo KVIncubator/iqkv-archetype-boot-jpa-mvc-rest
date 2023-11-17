@@ -120,7 +120,6 @@
             <directory/>
             <includes>
                 <include>.gitattributes</include>
-                <include>SEMANTIC_COMMITS.md</include>
                 <include>CONTRIBUTING.md</include>
                 <include>CODE_OF_CONDUCT.md</include>
                 <include>mvnw</include>

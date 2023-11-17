@@ -26,7 +26,12 @@ steps :
       DEPLOYER_PASSWORD :
         from_secret : DEPLOYER_PASSWORD
     commands :
+      - javac -version
       - mvn -version
+      - node --version
+      - npm --version
+      - npx --version
+      - npm install
       - mvn dependency:resolve -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
       - mvn clean verify -Dstyle.color=always -Dmaven.javadoc.skip=true -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
 
@@ -50,7 +55,7 @@ steps :
     commands :
       - mvn org.apache.maven.plugins:maven-dependency-plugin:3.5.0:copy-dependencies -Dmdep.prependGroupId=true -Dstyle.color=always -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
       - mvn sonar:sonar '-Dsonar.java.libraries=target/dependency/*.jar' '-Dsonar.java.test.libraries=target/classes,target/dependency/*.jar' -Dsonar.qualitygate.wait=true -Dsonar.qualitygate.timeout=300 -Dsonar.host.url=${symbol_dollar}SONAR_HOST -Dsonar.login=${symbol_dollar}SONAR_TOKEN -Dsonar.projectKey=${symbol_dollar}{DRONE_REPO_OWNER}:${symbol_dollar}{DRONE_REPO_NAME} -Dsonar.projectName=${symbol_dollar}{DRONE_REPO_OWNER}:${symbol_dollar}{DRONE_REPO_NAME} -Dstyle.color=always -Dmaven.javadoc.skip=true --batch-mode -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
-      #- mvn org.apache.maven.plugins:maven-pmd-plugin:3.21.0:check --batch-mode -Dstyle.color=always -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD
+      - pmd check -d src -f text -R https://raw.githubusercontent.com/pmd/pmd/master/pmd-java/src/main/resources/rulesets/java/basic.xml
       - mvn com.github.spotbugs:spotbugs-maven-plugin:4.7.3.4:check -s ../maven-settings.xml -Ddeployer.username=${symbol_dollar}DEPLOYER_USERNAME -Ddeployer.password=${symbol_dollar}DEPLOYER_PASSWORD  -Dspotbugs.xmlOutput=true -Dspotbugs.failOnError=true -Dspotbugs.excludeFilterFile=../spotbugs-exclude.xml -Dspotbugs.includeTests=true -Dstyle.color=always
 
   - name : notify-slack-on-failure
@@ -79,7 +84,7 @@ trigger :
     - push
     - tag
   ref :
-    - refs/heads/develop
+    - refs/heads/dev
     - refs/heads/prerelease*
     - refs/heads/*.*.x
     - refs/tags/*
@@ -108,7 +113,7 @@ steps :
     when :
       branch :
         include :
-          - "develop"
+          - "dev"
           - "prerelease/*"
           - "*.*.x"
 
@@ -133,7 +138,7 @@ steps :
     image : plugins/github-release
     settings :
       api_key :
-        from_secret : GITHUB_API_KEY
+        from_secret : GITHUB_API_ACCESS_TOKEN
       title : ${DRONE_TAG}
       note : "**Full Changelog**: https://github.com/${symbol_dollar}{DRONE_REPO}/commits/${symbol_dollar}{DRONE_TAG}"
       files : ./target/*.jar
@@ -393,7 +398,7 @@ trigger :
   event :
     - custom
   branch :
-    - "develop"
+    - "dev"
     - "*.*.x"
 
 volumes :

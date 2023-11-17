@@ -2,7 +2,7 @@ ARG BASE_IMAGE
 
 FROM $BASE_IMAGE
 
-LABEL maintainer="dev@ujar.org"
+LABEL maintainer="maintainer@knowhowto.dev"
 ARG BUILD_VERSION
 ENV APPLICATION_BUILD_VERSION ${BUILD_VERSION}
 

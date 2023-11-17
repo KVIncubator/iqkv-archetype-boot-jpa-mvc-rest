@@ -3,8 +3,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.ujar.build</groupId>
-    <artifactId>archetype-boot-jpa-restful</artifactId>
+    <groupId>dev.knowhowto.boot.archetype</groupId>
+    <artifactId>archetype-jpa-restful</artifactId>
     <version>23.0.0-SNAPSHOT</version>
     <packaging>maven-archetype</packaging>
     <description>Maven Archetype for Spring Boot Java REST API + JPA</description>
@@ -16,12 +16,12 @@
         </license>
     </licenses>
     <organization>
-        <name>uJar Bootcamp</name>
-        <url>https://www.ujar.org</url>
+        <name>KnowHowSpringBoot Bootcamp</name>
+        <url>https://knowhowto.dev</url>
     </organization>
     <developers>
         <developer>
-            <id>1</id>
+            <id>dimdnk</id>
             <name>Dima Denysenko</name>
             <email>coding@dimdnk.com</email>
             <roles>
@@ -31,7 +31,7 @@
     </developers>
 
     <parent>
-        <groupId>org.ujar.boot</groupId>
+        <groupId>dev.knowhowto.boot</groupId>
         <artifactId>boot-parent-pom</artifactId>
         <version>23.0.0-SNAPSHOT</version>
         <relativePath/>
