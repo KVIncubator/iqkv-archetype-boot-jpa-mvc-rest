@@ -36,10 +36,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-undertow</artifactId>
-        </dependency>
-        <dependency>
             <groupId>dev.knowhowto.boot</groupId>
             <artifactId>boot-starter-cache</artifactId>
         </dependency>
