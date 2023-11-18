@@ -75,7 +75,7 @@ server :
   port : ${symbol_dollar}{SERVER_PORT:8080}
   shutdown : graceful
   forward-headers-strategy : framework
-  tomcat:
+  tomcat :
     redirect-context-root : false
 
 management :
@@ -112,7 +112,7 @@ management :
     metrics :
       export :
         step : 20s
-        enabled: true
+        enabled : true
   zipkin :
     tracing :
       endpoint : ${symbol_dollar}{TEMPO_URL:http://localhost:9411/api/v2/spans}
