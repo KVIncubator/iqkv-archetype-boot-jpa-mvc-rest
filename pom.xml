@@ -3,8 +3,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>dev.knowhowto.boot.archetype</groupId>
-    <artifactId>archetype-jpa-restful</artifactId>
+    <groupId>org.iqkv.archetype</groupId>
+    <artifactId>archetype-boot-jpa-restful</artifactId>
     <version>23.0.0-SNAPSHOT</version>
     <packaging>maven-archetype</packaging>
     <description>Maven Archetype for Spring Boot Java REST API + JPA</description>
@@ -31,7 +31,7 @@
     </developers>
 
     <parent>
-        <groupId>dev.knowhowto.boot</groupId>
+        <groupId>org.iqkv.boot</groupId>
         <artifactId>boot-parent-pom</artifactId>
         <version>23.0.0-SNAPSHOT</version>
         <relativePath/>

@@ -18,7 +18,7 @@
         </license>
     </licenses>
     <parent>
-        <groupId>dev.knowhowto.boot</groupId>
+        <groupId>org.iqkv.boot</groupId>
         <artifactId>boot-parent-pom</artifactId>
         <version>23.0.0-SNAPSHOT</version>
     </parent>
@@ -36,15 +36,15 @@
 
     <dependencies>
         <dependency>
-            <groupId>dev.knowhowto.boot</groupId>
+            <groupId>org.iqkv.boot</groupId>
             <artifactId>boot-starter-cache</artifactId>
         </dependency>
         <dependency>
-            <groupId>dev.knowhowto.boot</groupId>
+            <groupId>org.iqkv.boot</groupId>
             <artifactId>boot-starter-restful</artifactId>
         </dependency>
         <dependency>
-            <groupId>dev.knowhowto.boot</groupId>
+            <groupId>org.iqkv.boot</groupId>
             <artifactId>boot-starter-observability</artifactId>
         </dependency>
         <dependency>

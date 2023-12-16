@@ -68,29 +68,17 @@
                 <include>**/*.yml</include>
             </includes>
         </fileSet>
-        <fileSet filtered="true" encoding="UTF-8">
+        <fileSet filtered="false" encoding="UTF-8">
             <directory>.mvn/wrapper</directory>
             <includes>
-                <include>**/*.java</include>
                 <include>**/*.properties</include>
+                <include>**/*.jar</include>
             </includes>
         </fileSet>
         <fileSet encoding="UTF-8">
             <directory>.github/workflows</directory>
             <includes>
                 <include>**/*.yml</include>
-            </includes>
-        </fileSet>
-        <fileSet filtered="true" encoding="UTF-8">
-            <directory>.drone</directory>
-            <includes>
-                <include>**/*.yml</include>
-            </includes>
-        </fileSet>
-        <fileSet encoding="UTF-8">
-            <directory>.drone</directory>
-            <includes>
-                <include>**/Dockerfile</include>
             </includes>
         </fileSet>
         <fileSet encoding="UTF-8">

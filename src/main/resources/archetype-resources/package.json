@@ -1,5 +1,5 @@
 {
-    "name": "know-how-spring-boot-${artifactId}",
+    "name": "@know-how-spring-boot/${artifactId}",
     "version": "23.0.0",
     "description": "Provide an optional Git commit hooks.",
     "private": true,
