@@ -1,8 +1,3 @@
-#set( $symbol_pound = '#' )
-#set( $symbol_dollar = '$' )
-#set( $symbol_escape = '\' )
-package ${package}.web;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -29,9 +24,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import ${package}.entity.Fruit;
-import ${package}.repository.FruitRepository;
+import org.springframework.util.MultiValueMap;{package}.repository.FruitRepository;
 
 @WebMvcTest(value = FruitResource.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 class FruitResourceTest {
