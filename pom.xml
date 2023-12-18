@@ -5,7 +5,7 @@
 
     <groupId>org.iqkv.archetype</groupId>
     <artifactId>archetype-boot-jpa-restful</artifactId>
-    <version>23.0.0-SNAPSHOT</version>
+    <version>24.0.0-SNAPSHOT</version>
     <packaging>maven-archetype</packaging>
     <description>Maven Archetype for Spring Boot Java REST API + JPA</description>
     <licenses>
@@ -33,7 +33,7 @@
     <parent>
         <groupId>org.iqkv.boot</groupId>
         <artifactId>boot-parent-pom</artifactId>
-        <version>23.0.0-SNAPSHOT</version>
+        <version>24.0.0-SNAPSHOT</version>
         <relativePath/>
     </parent>
 
