@@ -1,3 +1,8 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+package ${package}.web;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +25,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;{package}.repository.FruitRepository;
+import org.springframework.web.bind.annotation.RestController;
+import ${package}.entity.Fruit;
+import ${package}.repository.FruitRepository;
 
 @RestController
 @Tag(name = "Fruits", description = "API endpoints for managing fruit entity.")

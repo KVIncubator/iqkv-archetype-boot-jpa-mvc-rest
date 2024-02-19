@@ -1,3 +1,8 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+package ${package}.config;
+
 import java.time.Duration;
 
 import org.ehcache.config.builders.CacheConfigurationBuilder;
