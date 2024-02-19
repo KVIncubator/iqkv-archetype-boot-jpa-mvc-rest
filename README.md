@@ -16,7 +16,7 @@ cd archetype-boot-jpa-restful
 ./mvnw clean package install
 mkdir generated-apps
 cd generated-apps
-mvn archetype:generate -DarchetypeGroupId=org.iqkv.archetype -DarchetypeArtifactId=archetype-boot-jpa-restful -DarchetypeVersion=23.0.0-SNAPSHOT
+mvn archetype:generate -DarchetypeGroupId=org.iqkv.archetype -DarchetypeArtifactId=archetype-boot-jpa-restful -DarchetypeVersion=24.0.0-SNAPSHOT
 ```
 
 #### Example:
@@ -24,7 +24,7 @@ mvn archetype:generate -DarchetypeGroupId=org.iqkv.archetype -DarchetypeArtifact
 ```
 [INFO] --- maven-archetype-plugin:3.2.1:generate (default-cli) @ standalone-pom ---
 [INFO] Generating project in Interactive mode
-[INFO] Archetype repository not defined. Using the one from [org.iqkv.archetype:archetype-boot-jpa-restful:23.0.0-SNAPSHOT] found in catalog local
+[INFO] Archetype repository not defined. Using the one from [org.iqkv.archetype:archetype-boot-jpa-restful:24.0.0-SNAPSHOT] found in catalog local
 Define value for property 'groupId': com.example
 Define value for property 'artifactId': fruit-packaging-service
 [INFO] Using property: version = 1.0.0-SNAPSHOT

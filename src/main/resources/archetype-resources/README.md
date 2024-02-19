@@ -76,7 +76,7 @@ ${symbol_pound}${symbol_pound}${symbol_pound} Tests
 This project has standard JUnit tests. To run them execute this command:
 
 ```text
-./mvnw test
+./mvnw clean verify
 ```
 
 It is mandatory to keep test code coverage not below **80** percents and cover all business logic and edge cases.
