@@ -41,7 +41,7 @@
         </dependency>
         <dependency>
             <groupId>org.iqkv.boot</groupId>
-            <artifactId>boot-starter-restful</artifactId>
+            <artifactId>boot-starter-mvc-rest</artifactId>
         </dependency>
         <dependency>
             <groupId>org.iqkv.boot</groupId>
