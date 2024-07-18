@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.iqkv.archetype</groupId>
-    <artifactId>archetype-boot-jpa-restful</artifactId>
+    <artifactId>archetype-boot-jpa-mvc-rest</artifactId>
     <version>24.0.0-SNAPSHOT</version>
     <packaging>maven-archetype</packaging>
     <description>Maven Archetype for Spring Boot Java REST API + JPA</description>
