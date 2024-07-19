@@ -1,5 +1,5 @@
 {
-    "name": "@know-how-spring-boot/archetype-boot-jpa-mvc-rest",
+    "name": "@iqkv/archetype-boot-jpa-mvc-rest",
     "version": "24.0.0",
     "description": "Provide an optional Git commit hooks.",
     "private": true,
