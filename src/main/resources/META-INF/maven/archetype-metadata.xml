@@ -108,8 +108,6 @@
             <directory/>
             <includes>
                 <include>.gitattributes</include>
-                <include>CONTRIBUTING.md</include>
-                <include>CODE_OF_CONDUCT.md</include>
                 <include>mvnw</include>
                 <include>.gitignore</include>
                 <include>LICENSE</include>
