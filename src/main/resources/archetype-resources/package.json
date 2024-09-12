@@ -9,13 +9,13 @@
     "author": "Dima Denisenko",
     "license": "Apache-2.0",
     "devDependencies": {
-        "husky": "8.0.3",
+        "husky": "9.1.6",
         "prettier": "3.0.3",
         "prettier-plugin-java": "2.3.1",
         "prettier-plugin-packagejson": "2.4.6"
     },
     "engines": {
-        "node": ">=16.17.0"
+        "node": ">=18.20.4"
     },
     "cacheDirectories": [
         "node_modules"
